@@ -3,6 +3,9 @@ from rest_framework.views import APIView
 from rest_framework import generics, permissions
 from rest_framework.response import Response
 from core import models
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class WhitelistView(APIView):
@@ -37,6 +40,7 @@ class WhitelistView(APIView):
                     'message': f'Unknown command {command}'
                 })
         except Exception as ex:
+            logger.error(ex)
             return Response({
                 'result': 906,
                 'message': f'Invalid request details'
@@ -68,7 +72,7 @@ class PaymentFileSharedView(APIView):
         try:
             models.PaymentFile.objects.create(**params)
         except Exception as ex:
-            print(ex)
+            logger.error(ex)
             return Response({
                 'result': 906,
                 'message': f'Invalid request details',

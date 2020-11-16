@@ -1,5 +1,8 @@
 import time
 import threading
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class Processor(threading.Thread):
@@ -8,4 +11,4 @@ class Processor(threading.Thread):
 
     def run(self):
         time.sleep(10)
-        print('Done processing the file')
+        logger.debug('Done processing the file')
