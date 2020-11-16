@@ -11,4 +11,4 @@ class Processor(threading.Thread):
 
     def run(self):
         time.sleep(10)
-        logger.debug('Done processing the file')
+        logger.debug('Done processing the file ...')
