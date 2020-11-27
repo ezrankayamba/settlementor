@@ -3,7 +3,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 import time
 
-from .models import PaymentFile, Consumer
+from .models import FileEntry, Consumer
 from concurrent.futures import ThreadPoolExecutor
 from .processor import Processor
 
@@ -16,7 +16,7 @@ def create_consumer(sender, instance, created, **kwargs):
         Consumer.objects.create(user=instance)
 
 
-@receiver(post_save, sender=PaymentFile)
+@receiver(post_save, sender=FileEntry)
 def notified(sender, instance, created, **kwargs):
     if created:
         print('Notified: ', instance.file_name)

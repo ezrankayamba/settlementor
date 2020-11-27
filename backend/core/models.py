@@ -29,7 +29,7 @@ class Payment(models.Model):
         unique_together = ['reference_number', 'consumer']
 
 
-class PaymentFile(models.Model):
+class FileEntry(models.Model):
     file_name = models.CharField(max_length=20, unique=True)
     timestamp = models.CharField(max_length=40)
     file_reference_id = models.CharField(max_length=20, unique=True)
@@ -37,3 +37,4 @@ class PaymentFile(models.Model):
     count_of_records = models.IntegerField()
     status = models.CharField(max_length=20, default='Pending')
     consumer = models.ForeignKey(Consumer, on_delete=models.PROTECT)
+    entry_type = models.CharField(max_length=20, default='PAYMENT_FILE')
