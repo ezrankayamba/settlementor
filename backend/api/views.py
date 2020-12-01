@@ -16,24 +16,35 @@ class WhitelistView(APIView):
         data = request.data
         owner_id = data['companyID']
         consumer = request.user.consumer
+        command = data['command']
         params = {
             'owner_id': data['companyID'],
             'owner_name': data['companyName'],
             'bank_id': data['bankId'],
             'account_number': data['bankAccountNumber'],
             'consumer': consumer,
+            'command': command
         }
-        command = data['command']
+
         try:
             if command == 'ADD':
+                params['request'] = 'Initiated'
                 models.Customer.objects.create(**params)
             elif command == 'UPDATE':
-                cust = models.Customer.objects.filter(owner_id=owner_id, consumer=consumer).first()
-                cust.account_number = data['bankAccountNumber']
-                cust.bank_id = data['bankId']
+                cust = models.Customer.objects.filter(owner_id=owner_id, consumer=consumer, status='Active').first()
+                cust.account_number_req = data['bankAccountNumber']
+                cust.bank_id_req = data['bankId']
+                cust.command = command
+                cust.request = 'Initiated'
+                cust.save()
             elif command == 'REMOVE':
-                cust = models.Customer.objects.filter(owner_id=owner_id, consumer=consumer).first()
-                cust.delete()
+                cust = models.Customer.objects.filter(owner_id=owner_id, consumer=consumer, status='Active').first()
+                # cust.delete()
+                cust.command = command
+                cust.request = 'Initiated'
+                cust.account_number_req = None
+                cust.bank_id_req = None
+                cust.save()
             else:
                 return Response({
                     'result': 905,
@@ -43,7 +54,7 @@ class WhitelistView(APIView):
             logger.error(ex)
             return Response({
                 'result': 906,
-                'message': f'Invalid request details'
+                'message': f'Invalid request details or customer is not active'
             })
 
         return Response({

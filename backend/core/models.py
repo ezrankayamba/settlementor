@@ -6,13 +6,26 @@ class Consumer(models.Model):
     user = models.OneToOneField(User, on_delete=models.PROTECT)
     status = models.CharField(default='Active', max_length=10)
 
+    def __str__(self):
+        return f'{self.user.username}({self.status})'
+
 
 class Customer(models.Model):
     owner_id = models.CharField(unique=True, max_length=20)
+    recorded_at = models.DateTimeField(auto_now_add=True)
     owner_name = models.CharField(max_length=100)
     bank_id = models.CharField(max_length=10)
+    bank_id_req = models.CharField(max_length=10, null=True)
     account_number = models.CharField(max_length=20)
+    account_number_req = models.CharField(max_length=20, null=True)
     consumer = models.ForeignKey(Consumer, on_delete=models.PROTECT)
+    status = models.CharField(max_length=20, default='Pending')
+    command = models.CharField(max_length=20)
+    request = models.CharField(max_length=20)
+    approval_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'{self.owner_id} - {self.owner_name}|{self.bank_id}/{self.account_number}|{self.status}'
 
 
 class Payment(models.Model):

@@ -20,6 +20,6 @@ def create_consumer(sender, instance, created, **kwargs):
 def notified(sender, instance, created, **kwargs):
     if created:
         print('Notified: ', instance.file_name)
-        proc = Processor()
+        proc = Processor(instance)
         proc.daemon = True
         proc.start()
