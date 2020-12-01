@@ -30,4 +30,4 @@ def send_message(message, receiver, channel='SMS', sms_shortcode='843', email_sr
 
 if __name__ == "__main__":
     send_message('Awesome SMS', '255713123066', channel='SMS')
-    # send_message('Awesome email', 'godfred.nkayamba@tigo.co.tz', channel='Email', email_src='Service.Tigopesa@tigo.co.tz')
+    send_message('Awesome email', 'godfred.nkayamba@tigo.co.tz', channel='Email', email_src='Service.Tigopesa@tigo.co.tz')
