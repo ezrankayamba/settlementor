@@ -2,11 +2,16 @@ from . import secure_store as ss
 from cryptography.fernet import Fernet
 import io
 import ntpath
+import hashlib
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding
+import base64
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def encrypt(filename):
@@ -42,6 +47,31 @@ def decrypt(filename, store_pass):
         with open(filename, "w") as f:
             for line in s:
                 f.write(line)
+
+
+def verify(filename, sign):
+    with open(filename, "r") as file:
+        data = file.read().encode('utf-8')
+        public_key = get_public_key()
+        signature = base64.b64decode(sign)
+        try:
+            public_key.verify(signature, data, padding.PKCS1v15(), hashes.SHA256())
+            return True
+        except Exception as ex:
+            logger.debug(ex)
+            return False
+
+
+def sign(filename, store_pass):
+    with open(f'{filename}', "r") as file:
+        data = file.read().encode('utf-8')
+        private_key = get_private_key(store_pass)
+        sig = private_key.sign(data, padding.PKCS1v15(), hashes.SHA256())
+        signature = str(
+            base64.b64encode(sig),
+            encoding='utf8'
+        )
+        return signature
 
 
 def generate_key_pairs(password=None):

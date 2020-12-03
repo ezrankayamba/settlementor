@@ -35,6 +35,7 @@ INSTALLED_APPS = [
 
     'core.apps.CoreConfig',
     'api',
+    'config',
 ]
 
 MIDDLEWARE = [
@@ -167,4 +168,14 @@ LOGGING = {
             'propagate': False,
         },
     },
+}
+
+
+def token_exp():
+    from config import config as cfg
+    return cfg.env_token_exp()
+
+
+OAUTH2_PROVIDER = {
+    'ACCESS_TOKEN_EXPIRE_SECONDS': token_exp()
 }

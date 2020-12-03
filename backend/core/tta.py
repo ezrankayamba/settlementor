@@ -2,9 +2,10 @@ import xml.etree.ElementTree as ET
 import requests
 import re
 import xmltodict as xml
-pattern = re.compile(r'\s+')
+from config import config as cfg
 
-TELEPIN_URL = 'http://10.99.1.161:6060/TELEPIN'
+
+pattern = re.compile(r'\s+')
 
 
 def pay_settlement(username, password,  bank_account,  amount, bank_id='CRDB', brand_id='1071', terminal_type='WEB'):
@@ -25,7 +26,8 @@ def pay_settlement(username, password,  bank_account,  amount, bank_id='CRDB', b
     headers = {
         'Content-Type': 'text/xml'
     }
-    res = requests.post(TELEPIN_URL, req_xml, headers=headers)
+
+    res = requests.post(cfg.tta_url(), req_xml, headers=headers)
     if res.ok:
         res_xml = res.text
         print(res_xml)
@@ -55,7 +57,7 @@ def check_balance(username, password, terminal_type='WEB'):
     headers = {
         'Content-Type': 'text/xml'
     }
-    res = requests.post(TELEPIN_URL, req_xml, headers=headers)
+    res = requests.post(cfg.tta_url(), req_xml, headers=headers)
     if res.ok:
         res_xml = res.text
         print(res_xml)

@@ -81,12 +81,12 @@ class PaymentFileSharedView(APIView):
             'consumer': consumer,
         }
         try:
-            models.PaymentFile.objects.create(**params)
+            models.FileEntry.objects.create(**params)
         except Exception as ex:
             logger.error(ex)
             return Response({
                 'result': 906,
-                'message': f'Invalid request details',
+                'message': f'Invalid request details: {ex}',
                 'fileReferenceId': f_ref_id
             })
 

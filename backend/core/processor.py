@@ -12,4 +12,8 @@ class Processor(threading.Thread):
 
     def run(self):
         time.sleep(10)
+        consumer = self.file_entry.consumer
+        logger.debug(f'{consumer.msisdn} = {self.file_entry.file_name}')
         logger.debug(f'Done processing the file ...{ self.file_entry}')
+        with open(f'files/{self.file_entry.file_name}') as f:
+            print('File read!')
