@@ -53,3 +53,4 @@ class FileEntry(models.Model):
     status = models.CharField(max_length=20, default='Pending')
     consumer = models.ForeignKey(Consumer, on_delete=models.PROTECT)
     entry_type = models.CharField(max_length=20, default='PAYMENT_FILE')
+    signature = models.CharField(max_length=1000, null=True)

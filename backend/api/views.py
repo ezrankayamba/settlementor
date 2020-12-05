@@ -70,23 +70,25 @@ class PaymentFileSharedView(APIView):
     def post(self, request, format=None):
         data = request.data
         consumer = request.user.consumer
-        f_ref_id = data['fileReferenceId']
-        f_name = data['fileName']
-        params = {
-            'file_name': f_name,
-            'timestamp': data['timestamp'],
-            'file_reference_id': f_ref_id,
-            'total_amount': data['totalAmount'],
-            'count_of_records': data['countOfRecords'],
-            'consumer': consumer,
-        }
+        f_ref_id = None
         try:
+            f_ref_id = data['fileReferenceId']
+            f_name = data['fileName']
+            params = {
+                'file_name': f_name,
+                'timestamp': data['timestamp'],
+                'file_reference_id': f_ref_id,
+                'total_amount': data['totalAmount'],
+                'count_of_records': data['countOfRecords'],
+                'consumer': consumer,
+                'signature': data['fileSignature'],
+            }
             models.FileEntry.objects.create(**params)
         except Exception as ex:
             logger.error(ex)
             return Response({
                 'result': 906,
-                'message': f'Invalid request details: {ex}',
+                'message': f'Invalid request or missing details: {ex}',
                 'fileReferenceId': f_ref_id
             })
 
