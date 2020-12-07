@@ -60,21 +60,27 @@ def check_balance(username, password, terminal_type='WEB'):
     headers = {
         'Content-Type': 'text/xml'
     }
-    res = requests.post(cfg.bal_url(), req_xml, headers=headers)
-    if res.ok:
-        res_xml = res.text
-        print(res_xml)
-        res = xml.parse(res_xml)['TCSReply']
-        print(res)
-        result = int(res['Result'])
-        message = res['Message']
+    try:
+        res = requests.post(cfg.bal_url(), req_xml, headers=headers)
+        if res.ok:
+            res_xml = res.text
+            print(res_xml)
+            res = xml.parse(res_xml)['TCSReply']
+            print(res)
+            result = int(res['Result'])
+            message = res['Message']
 
-        if result == 0:
-            balance = res['param1']
-            print('Success: ', '0:', message)
-            print('Balance: ', balance)
+            if result == 0:
+                balance = res['param1']
+                print('Success: ', '0:', message)
+                print('Balance: ', balance)
+
+                return (0, balance)
+            else:
+                print('Failed: ', result, ':', message)
+
         else:
-            print('Failed: ', result, ':', message)
+            print('Failed: ', res.status_code)
 
-    else:
-        print('Failed: ', res.status_code)
+    except Exception as ex:
+        return (-1, ex)
