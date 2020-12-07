@@ -1,6 +1,9 @@
 import time
 import threading
 import logging
+from . import secure_files as sf
+from . import secure_store as ss
+from . import tta
 
 logger = logging.getLogger(__name__)
 
@@ -11,9 +14,18 @@ class Processor(threading.Thread):
         self.file_entry = file_entry
 
     def run(self):
-        time.sleep(10)
+        time.sleep(2)
         consumer = self.file_entry.consumer
         logger.debug(f'{consumer.msisdn} = {self.file_entry.file_name}')
-        logger.debug(f'Done processing the file ...{ self.file_entry}')
-        with open(f'files/{self.file_entry.file_name}') as f:
-            print('File read!')
+        logger.debug(f'Signature: { self.file_entry.signature}')
+        path = f'files/{self.file_entry.file_name}'
+        with open(path) as f:
+            verified = sf.verify(path, self.file_entry.signature)
+            print('Verified: ', verified)
+            if verified:
+                logger.debug('Successfully verified the signature. Continue with payment')
+                username = consumer.msisdn
+                password = ss.retrieve('TELEPIN', username)
+                tta.check_balance(username, password)
+            else:
+                logger.debug(f'Signature is not valid: {self.file_entry.file_name}')
