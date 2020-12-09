@@ -39,22 +39,25 @@ def notified_file_entry(sender, instance, created, **kwargs):
 def notified_customer_update(sender, instance, created, **kwargs):
     def run():
         logger.debug(f'FileEntry created/updated: {instance}')
-        if instance.status == 'Initiated':
-            logger.debug(f'Initiated: {instance}')
-            msg = f'Approve {instance.command} of customer. \nDetails: {instance}'
-            send_message(message=msg, receiver='255713123066')
-            send_message(message=msg, receiver='godfred.nkayamba@tigo.co.tz', channel='Email', email_sub='WL Approval')
-        else:
-            logger.debug(f'Approval: {instance}')
-            data = {
-                "companyID": instance.owner_id,
-                "approval": instance.request,
-                "command": instance.command,
-                "timestamp": datetime.now().isoformat(timespec='minutes')
-            }
-            url = cfg.approval_url()
-            logger.debug(f'Url: {url}')
-            logger.debug(f'Data: {data}')
-            requests.post(url, data=data)
+        try:
+            if instance.status == 'Initiated':
+                logger.debug(f'Initiated: {instance}')
+                msg = f'Approve {instance.command} of customer. \nDetails: {instance}'
+                send_message(message=msg, receiver='255713123066')
+                send_message(message=msg, receiver='godfred.nkayamba@tigo.co.tz', channel='Email', email_sub='WL Approval')
+            else:
+                logger.debug(f'Approval: {instance}')
+                data = {
+                    "companyID": instance.owner_id,
+                    "approval": instance.request,
+                    "command": instance.command,
+                    "timestamp": datetime.now().isoformat(timespec='minutes')
+                }
+                url = cfg.approval_url()
+                logger.debug(f'Url: {url}')
+                logger.debug(f'Data: {data}')
+                requests.post(url, data=data)
+        except Exception as ex:
+            logger.error(f'Error: {ex}')
     t = threading.Thread(target=run)
     t.start()
