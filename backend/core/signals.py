@@ -42,13 +42,14 @@ def notified_customer_update(sender, instance, created, **kwargs):
         try:
             if instance.request == 'Initiated':
                 logger.debug(f'Initiated: {instance}')
-                msg = f'Approval for customer <b>{instance.command}</b>. \nDetails: {instance}. \n\nIf you approve, forward and instruct command center with a ticket.\n\nRegards,\nSettlementor'
                 try:
+                    msg = f'Customer Whitelist Approval\nRequested action: {instance.command}\nDetails: {instance}. \n\nIf you approve, forward and instruct command center with a ticket.\n\nRegards,\nSettlementor'
                     send_message(message=msg, receiver='255713123066')
                 except Exception as ex:
                     logger.error(f'Error sending SMS: {ex}')
 
                 try:
+                    msg = f'<h3>Customer Whitelist Approval</h3><label>Requested action:</label> {instance.command}<br/><label>Details:</label> {instance}.<br/><br/>If you approve, forward and instruct command center with a ticket.<br/><br/>Regards,\nSettlementor'
                     send_message(message=msg, receiver='godfred.nkayamba@tigo.co.tz', channel='Email', email_sub='WL Approval')
                 except Exception as ex:
                     logger.error(f'Error sending mail: {ex}')
