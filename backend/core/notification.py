@@ -5,7 +5,7 @@ from zeep.wsse.username import UsernameToken
 WSDL_URL = 'http://10.222.130.29:8002/osb/services/SendNotification_1_0?WSDL'
 
 
-def send_message(message, receiver, channel='SMS', sms_shortcode='843', email_src='Tigo.Pesa@tigo.co.tz', email_sub='Settlementor'):
+def send_message(message, receiver, channel='SMS', sms_shortcode='843', email_src='Service.Tigopesa@tigo.co.tz', email_sub='Settlementor'):
     client = zeep.Client(wsdl=WSDL_URL, wsse=UsernameToken('test_mw_TigopesaSettlement', 'M@grVt1on123!'))
     country_type = client.get_type('ns1:CountryContentType')
     country = country_type('TZA')
