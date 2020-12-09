@@ -42,7 +42,7 @@ def notified_customer_update(sender, instance, created, **kwargs):
         try:
             if instance.request == 'Initiated':
                 logger.debug(f'Initiated: {instance}')
-                msg = f'Approve {instance.command} of customer. \nDetails: {instance}'
+                msg = f'Approval for customer <b>{instance.command}</b>. \nDetails: {instance}. \n\nIf you approve, forward and instruct command center with a ticket.\n\nRegards,\nSettlementor'
                 try:
                     send_message(message=msg, receiver='255713123066')
                 except Exception as ex:
