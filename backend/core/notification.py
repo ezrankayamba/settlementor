@@ -18,7 +18,8 @@ def send_message(message, receiver, channel='SMS', sms_shortcode='843', email_sr
     if channel == 'Email':
         params = {'_value_1': [
             {'ParameterType': params_type('FROM', email_src)},
-            {'ParameterType': params_type('SUBJECT', email_sub)}
+            {'ParameterType': params_type('SUBJECT', email_sub)},
+            {'ParameterType': params_type('format', 'html')},
         ]}
     else:
         params = {'_value_1': [
