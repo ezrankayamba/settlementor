@@ -46,12 +46,12 @@ def notified_customer_update(sender, instance, created, **kwargs):
                 try:
                     send_message(message=msg, receiver='255713123066')
                 except Exception as ex:
-                    logger.error(f'Error: {ex}')
+                    logger.error(f'Error sending SMS: {ex}')
 
                 try:
                     send_message(message=msg, receiver='godfred.nkayamba@tigo.co.tz', channel='Email', email_sub='WL Approval')
                 except Exception as ex:
-                    logger.error(f'Error: {ex}')
+                    logger.error(f'Error sending mail: {ex}')
 
             else:
                 logger.debug(f'Approval: {instance}')
