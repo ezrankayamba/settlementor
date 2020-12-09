@@ -32,19 +32,24 @@ class WhitelistView(APIView):
                 models.Customer.objects.create(**params)
             elif command == 'UPDATE':
                 cust = models.Customer.objects.filter(owner_id=owner_id, consumer=consumer, status='Active').first()
-                cust.account_number_req = data['bankAccountNumber']
-                cust.bank_id_req = data['bankId']
-                cust.command = command
-                cust.request = 'Initiated'
-                cust.save()
+                if cust:
+                    cust.account_number_req = data['bankAccountNumber']
+                    cust.bank_id_req = data['bankId']
+                    cust.command = command
+                    cust.request = 'Initiated'
+                    cust.save()
+                else:
+                    raise Exception('Customer not found')
             elif command == 'REMOVE':
                 cust = models.Customer.objects.filter(owner_id=owner_id, consumer=consumer, status='Active').first()
-                # cust.delete()
-                cust.command = command
-                cust.request = 'Initiated'
-                cust.account_number_req = None
-                cust.bank_id_req = None
-                cust.save()
+                if cust:
+                    cust.command = command
+                    cust.request = 'Initiated'
+                    cust.account_number_req = None
+                    cust.bank_id_req = None
+                    cust.save()
+                else:
+                    raise Exception('Customer not found')
             else:
                 return Response({
                     'result': 905,

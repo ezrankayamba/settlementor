@@ -18,5 +18,9 @@ def tta_url():
     return f'{base_url}?p={p}'
 
 
+def approval_url():
+    return config.get('ENDPOINTS', 'APPROVAL_URL')
+
+
 def env_token_exp():
     return int(config.get('ENVIRONMENT', 'ENV_TOKEN_EXP'))
