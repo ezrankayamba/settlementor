@@ -26,13 +26,12 @@ class Processor(threading.Thread):
             print('Verified: ', verified)
             if verified:
                 logger.debug('Successfully verified the signature. Continue with payment')
-                username = consumer.msisdn
+                username = consumer.tp_username
                 password = ss.retrieve('TELEPIN', username)
                 bal_res, balance = tta.check_balance(username, password)
                 if bal_res == 0:  # This has to be 0=Success
                     print('Success balance check')
                     reader = csv.DictReader(csv_file)
-                    # CompanyID	Amount	ReferenceNumber
                     for row in reader:
                         company_id, amount, ref_number = row['CompanyID'], row['Amount'], row['ReferenceNumber']
                         print(company_id, amount, ref_number)
@@ -42,6 +41,12 @@ class Processor(threading.Thread):
                             print('Recorded')
                         else:
                             print(f'Not found: {company_id}')
+                    for payment in models.Payment.objects.filter(consumer=consumer, status='Pending'):
+                        tta_res, trans_id = tta.pay_settlement(ref_number=ref_number, username=username, password=password,  bank_account=cust.account_number,  amount=amount, bank_id=cust.bank_id)
+                        payment.status = 'Success' if tta_res == 0 else 'Submitted' if tta_res == 99999 else 'Fail'
+                        payment.result_code = tta_res
+                        payment.trans_id = trans_id
+                        payment.save()
                 else:
                     print(balance)
             else:

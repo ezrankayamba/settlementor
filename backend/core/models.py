@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 class Consumer(models.Model):
     user = models.OneToOneField(User, on_delete=models.PROTECT)
     status = models.CharField(default='Active', max_length=10)
-    msisdn = models.CharField(max_length=20, null=True)
+    tp_username = models.CharField(max_length=20, null=True)
     phone = models.CharField(max_length=20, null=True)
 
     def __str__(self):
@@ -39,6 +39,7 @@ class Payment(models.Model):
     amount = models.DecimalField(decimal_places=2, max_digits=20)
     status = models.CharField(max_length=20, default='Pending')
     result_code = models.CharField(max_length=20, null=True)
+    trans_id = models.CharField(max_length=50, null=True)
 
     class Meta:
         unique_together = ['reference_number', 'consumer']
