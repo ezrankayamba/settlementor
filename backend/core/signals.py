@@ -43,8 +43,16 @@ def notified_customer_update(sender, instance, created, **kwargs):
             if instance.request == 'Initiated':
                 logger.debug(f'Initiated: {instance}')
                 msg = f'Approve {instance.command} of customer. \nDetails: {instance}'
-                send_message(message=msg, receiver='255713123066')
-                send_message(message=msg, receiver='godfred.nkayamba@tigo.co.tz', channel='Email', email_sub='WL Approval')
+                try:
+                    send_message(message=msg, receiver='255713123066')
+                except Exception as ex:
+                    logger.error(f'Error: {ex}')
+
+                try:
+                    send_message(message=msg, receiver='godfred.nkayamba@tigo.co.tz', channel='Email', email_sub='WL Approval')
+                except Exception as ex:
+                    logger.error(f'Error: {ex}')
+
             else:
                 logger.debug(f'Approval: {instance}')
                 data = {
