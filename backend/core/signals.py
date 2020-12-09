@@ -40,7 +40,7 @@ def notified_customer_update(sender, instance, created, **kwargs):
     def run():
         logger.debug(f'FileEntry created/updated: {instance}')
         try:
-            if instance.status == 'Initiated':
+            if instance.request == 'Initiated':
                 logger.debug(f'Initiated: {instance}')
                 msg = f'Approve {instance.command} of customer. \nDetails: {instance}'
                 send_message(message=msg, receiver='255713123066')
