@@ -28,3 +28,7 @@ def approval_url():
 
 def env_token_exp():
     return int(config.get('ENVIRONMENT', 'ENV_TOKEN_EXP'))
+
+
+def consumer_data(name='TTA_TAPSOA'):
+    return (config.get(name, 'username'), config.get(name, 'password'), config.get(name, 'brand_id'))

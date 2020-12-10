@@ -27,8 +27,8 @@ class Processor(threading.Thread):
             if verified:
                 logger.debug('Successfully verified the signature. Continue with payment')
                 username = consumer.tp_username
-                password = ss.retrieve('TELEPIN', username)
-                bal_res, balance = tta.check_balance(username, password)
+                # password = ss.retrieve('TELEPIN', username)
+                bal_res, balance = tta.check_balance()
                 if bal_res == 0:  # This has to be 0=Success
                     print('Success balance check')
                     reader = csv.DictReader(csv_file)
@@ -42,7 +42,7 @@ class Processor(threading.Thread):
                         else:
                             print(f'Not found: {company_id}')
                     for payment in models.Payment.objects.filter(consumer=consumer, status='Pending'):
-                        tta_res, trans_id = tta.pay_settlement(ref_number=ref_number, username=username, password=password,  bank_account=cust.account_number,  amount=amount, bank_id=cust.bank_id)
+                        tta_res, trans_id = tta.pay_settlement(ref_number=ref_number, bank_account=cust.account_number,  amount=amount)
                         payment.status = 'Success' if tta_res == 0 else 'Submitted' if tta_res == 99999 else 'Fail'
                         payment.result_code = tta_res
                         payment.trans_id = trans_id

@@ -8,7 +8,8 @@ from config import config as cfg
 pattern = re.compile(r'\s+')
 
 
-def pay_settlement(ref_number, username, password,  bank_account,  amount, bank_id='CRDB', brand_id='1071', terminal_type='API'):
+def pay_settlement(ref_number,   bank_account,  amount, bank_id='CRDB',  terminal_type='API'):
+    username, password, brand_id = cfg.consumer_data()
     req_xml = f'''
         <TCSRequest>
             <UserName>{username}</UserName>
@@ -48,7 +49,8 @@ def pay_settlement(ref_number, username, password,  bank_account,  amount, bank_
     return (-1, None)
 
 
-def check_balance(username, password, terminal_type='API'):
+def check_balance(terminal_type='API'):
+    username, password, brand_id = cfg.consumer_data()
     req_xml = f'''
         <TCSRequest>
             <UserName>{username}</UserName>

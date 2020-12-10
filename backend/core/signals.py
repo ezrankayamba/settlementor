@@ -36,17 +36,20 @@ def notified_file_entry(sender, instance, created, **kwargs):
         proc.daemon = True
         proc.start()
     else:
-        logger.debug(f'FileEntry updated: {instance}')
-        data = {
-            "fileName": "tapsoa_20201109_payments_result.csv",
-            "timestamp": "2020-11-09 13:34:43",
-            "fileReferenceId": "TPS100001",
-            "totalAmountPaid": 17000000,
-            "countOfRecordsPaid": 46,
-            "fileSignature": "The signature here"
-        }
-        headers = {'Content-Type': 'application/json'}
-        requests.post(cfg.result_file_url(), data=json.dumps(data), headers=headers)
+        def run():
+            logger.debug(f'FileEntry updated: {instance}')
+            data = {
+                "fileName": "tapsoa_20201109_payments_result.csv",
+                "timestamp": "2020-11-09 13:34:43",
+                "fileReferenceId": "TPS100001",
+                "totalAmountPaid": 17000000,
+                "countOfRecordsPaid": 46,
+                "fileSignature": "The signature here"
+            }
+            headers = {'Content-Type': 'application/json'}
+            requests.post(cfg.result_file_url(), data=json.dumps(data), headers=headers)
+        t = threading.Thread(target=run)
+        t.start()
 
 
 @receiver(post_save, sender=Customer)
