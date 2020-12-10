@@ -29,10 +29,22 @@ def create_consumer(sender, instance, created, **kwargs):
 def notified_file_entry(sender, instance, created, **kwargs):
     logger.debug(f'FileEntry created/updated: {instance}')
     if created:
-        print('Notified: ', instance.file_name)
+        logger.debug(f'Notified: {instance.file_name}')
         proc = Processor(instance)
         proc.daemon = True
         proc.start()
+    else:
+        logger.debug(f'FileEntry updated: {instance}')
+        data = {
+            "fileName": "tapsoa_20201109_payments_result.csv",
+            "timestamp": "2020-11-09 13:34:43",
+            "fileReferenceId": "TPS100001",
+            "totalAmountPaid": 17000000,
+            "countOfRecordsPaid": 46,
+            "fileSignature": "The signature here"
+        }
+
+        requests.post(cfg.result_file_url(), data=data)
 
 
 @receiver(post_save, sender=Customer)
@@ -43,13 +55,13 @@ def notified_customer_update(sender, instance, created, **kwargs):
             if instance.request == 'Initiated':
                 logger.debug(f'Initiated: {instance}')
                 try:
-                    msg = f'Customer Whitelist Approval\nRequested action: {instance.command}\nDetails: {instance}. \n\nIf you approve, forward and instruct command center with a ticket.\n\nRegards,\nSettlementor'
+                    msg = f'Customer Whitelist Approval:\nRequested action: {instance.command}\nDetails: {instance}. \n\nIf you approve, forward and instruct command center with a ticket.\n\nRegards,\nSettlementor'
                     send_message(message=msg, receiver='255713123066')
                 except Exception as ex:
                     logger.error(f'Error sending SMS: {ex}')
 
                 try:
-                    msg = f'<h3>Customer Whitelist Approval</h3><label>Requested action:</label> {instance.command}<br/><label>Details:</label> {instance}.<br/><br/>If you approve, forward and instruct command center with a ticket.<br/><br/>Regards,\nSettlementor'
+                    msg = f'<h3>Customer Whitelist Approval</h3><label>Requested action:</label> {instance.command}<br/><label>Details:</label> {instance}.<br/><br/>If you approve, forward and instruct command center with a ticket.<br/><br/>Regards,<br/>Settlementor'
                     send_message(message=msg, receiver='godfred.nkayamba@tigo.co.tz', channel='Email', email_sub='WL Approval')
                 except Exception as ex:
                     logger.error(f'Error sending mail: {ex}')

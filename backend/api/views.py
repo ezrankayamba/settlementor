@@ -102,3 +102,54 @@ class PaymentFileSharedView(APIView):
             'message': f'Successfully executed the payment file notification',
             'fileReferenceId': f_ref_id
         })
+
+
+class WhiteListApprovalView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    required_scopes = []
+
+    def post(self, request, format=None):
+        data = request.data
+        consumer = request.user.consumer
+
+        try:
+            if not consumer.user.is_staff:
+                raise Exception('You must be Tigo staff to execute this API call')
+
+            owner_id = data['companyID']
+            cust = models.Customer.objects.get(owner_id=owner_id)
+            if not cust.request == 'Initiated':
+                raise Exception('The customer is not in initiated state')
+            if data['status'] == 'Approved':
+                cust.request = 'Approved'
+                if cust.command in ['ADD', 'UPDATE']:
+                    new_status = 'Active'
+                    if cust.command == 'UPDATE':
+                        cust.account_number = cust.account_number_req
+                        cust.bank_id = cust.bank_id_req
+                        cust.account_number_req = None
+                        cust.bank_id_req = None
+                else:  # Remove
+                    new_status = 'Removed'
+                cust.status = new_status
+                cust.save()
+                logger.info(f'Successfully approved customer whitelist [{cust.command}] for customer: {owner_id}')
+            elif data['status'] == 'Rejected':  # Rejected
+                cust.request = 'Rejected'
+                cust.account_number_req = None
+                cust.bank_id_req = None
+                cust.save()
+                logger.info(f'Successfully rejected customer whitelist [{cust.command}] for customer: {owner_id}')
+            else:
+                raise Exception('Invalid or no approval "status" provided')
+        except Exception as ex:
+            logger.error(ex)
+            return Response({
+                'result': 906,
+                'message': f'Invalid request or missing details: {ex}',
+            })
+
+        return Response({
+            'result': 200,
+            'message': f'Successfully executed the approval update'
+        })

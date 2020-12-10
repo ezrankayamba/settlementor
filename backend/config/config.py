@@ -18,6 +18,10 @@ def tta_url():
     return f'{base_url}?p={p}'
 
 
+def result_file_url():
+    return config.get('ENDPOINTS', 'RESULT_FILE_URL')
+
+
 def approval_url():
     return config.get('ENDPOINTS', 'APPROVAL_URL')
 
