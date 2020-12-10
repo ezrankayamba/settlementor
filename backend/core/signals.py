@@ -13,6 +13,8 @@ import requests
 from datetime import datetime
 from config import config as cfg
 
+import json
+
 logger = logging.getLogger(__name__)
 
 MAX_THREADS = 10
@@ -43,8 +45,8 @@ def notified_file_entry(sender, instance, created, **kwargs):
             "countOfRecordsPaid": 46,
             "fileSignature": "The signature here"
         }
-
-        requests.post(cfg.result_file_url(), data=data)
+        headers = {'Content-Type': 'application/json'}
+        requests.post(cfg.result_file_url(), data=json.dumps(data), headers=headers)
 
 
 @receiver(post_save, sender=Customer)
@@ -77,7 +79,9 @@ def notified_customer_update(sender, instance, created, **kwargs):
                 url = cfg.approval_url()
                 logger.debug(f'Url: {url}')
                 logger.debug(f'Data: {data}')
-                requests.post(url, data=data)
+
+                headers = {'Content-Type': 'application/json'}
+                requests.post(url, data=json.dumps(data), headers=headers)
         except Exception as ex:
             logger.error(f'Error: {ex}')
     t = threading.Thread(target=run)
