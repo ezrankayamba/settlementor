@@ -30,5 +30,17 @@ def env_token_exp():
     return int(config.get('ENVIRONMENT', 'ENV_TOKEN_EXP'))
 
 
+def sftp_tigo_path():
+    return config.get('TTA_SFTP', 'REMOTE_TIGO_PATH')
+
+
+def sftp_tapsoa_path():
+    return config.get('TTA_SFTP', 'REMOTE_TAPSOA_PATH')
+
+
+def sftp_local_path():
+    return config.get('TTA_SFTP', 'LOCAL_PATH')
+
+
 def consumer_data(name='TTA_TAPSOA'):
     return (config.get(name, 'username'), config.get(name, 'password'), config.get(name, 'brand_id'))
