@@ -30,8 +30,24 @@ class Customer(models.Model):
         return f'{self.owner_id} - {self.owner_name}|{self.bank_id}/{self.account_number}|{self.status}'
 
 
+class FileEntry(models.Model):
+    file_name = models.CharField(max_length=20, unique=True)
+    timestamp = models.CharField(max_length=40)
+    file_reference_id = models.CharField(max_length=20, unique=True)
+    total_amount = models.DecimalField(decimal_places=2, max_digits=40)
+    count_of_records = models.IntegerField()
+    status = models.CharField(max_length=20, default='Pending')
+    consumer = models.ForeignKey(Consumer, on_delete=models.PROTECT)
+    entry_type = models.CharField(max_length=20, default='PAYMENT_FILE')
+    signature = models.CharField(max_length=1000, null=True)
+
+    class Meta:
+        verbose_name_plural = 'File entries'
+
+
 class Payment(models.Model):
     reference_number = models.CharField(max_length=20)
+    file_entry = models.ForeignKey(FileEntry, null=True, on_delete=models.PROTECT)
     customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
     bank_id = models.CharField(max_length=10)
     account_number = models.CharField(max_length=20)
@@ -43,15 +59,3 @@ class Payment(models.Model):
 
     class Meta:
         unique_together = ['reference_number', 'consumer']
-
-
-class FileEntry(models.Model):
-    file_name = models.CharField(max_length=20, unique=True)
-    timestamp = models.CharField(max_length=40)
-    file_reference_id = models.CharField(max_length=20, unique=True)
-    total_amount = models.DecimalField(decimal_places=2, max_digits=40)
-    count_of_records = models.IntegerField()
-    status = models.CharField(max_length=20, default='Pending')
-    consumer = models.ForeignKey(Consumer, on_delete=models.PROTECT)
-    entry_type = models.CharField(max_length=20, default='PAYMENT_FILE')
-    signature = models.CharField(max_length=1000, null=True)
