@@ -23,8 +23,10 @@ keyring==21.5.0
 lazy-object-proxy==1.4.3
 lxml==4.6.2
 mccabe==0.6.1
+numpy==1.19.4
 oauth2-provider==0.0
 oauthlib==3.1.0
+pandas==1.1.5
 paramiko==2.7.2
 pycodestyle==2.6.0
 pycparser==2.20
@@ -34,6 +36,7 @@ pylint-django==2.3.0
 pylint-plugin-utils==0.6
 PyNaCl==1.4.0
 pysftp==0.2.9
+python-dateutil==2.8.1
 pytz==2020.4
 pywin32-ctypes==0.2.0
 requests==2.24.0
