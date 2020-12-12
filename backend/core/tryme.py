@@ -25,7 +25,7 @@ def run():
         for row in reader:
             company_id, amount, ref_number = row['CompanyID'], row['Amount'], row['ReferenceNumber']
             count += 1
-            total += amount
+            total += float(amount)
         headers = {'Content-Type': 'application/json', 'Authorization': f'Bearer {token}'}
         data = {
             "fileName": new_file,
