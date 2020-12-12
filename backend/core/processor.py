@@ -54,11 +54,11 @@ class Processor(threading.Thread):
                     logger.debug(df2.head(2))
                     df1 = pd.DataFrame(self.file_entry.file_name)
                     logger.debug(df1.head(2))
-                    df = pd.merge(df1[['CompanyID', 'Amount', 'ReferenceNumber']], df2[["TRANSFER_ID", "TransStatus", "ReceiptNo"]], on='TRANSFER_ID', how='left')
+                    df = pd.merge(df1, df2[["TRANSFER_ID", "TransStatus", "ReceiptNo"]], on='TRANSFER_ID', how='left')
                     file_name = f'Payment_Result_File_{self.file_entry.file_reference_id}.csv'
                     local_path = cfg.sftp_local_path()
                     remote_path = cfg.sftp_tigo_path()
-                    df.to_csv(f'{local_path}{file_name}.csv', index=False)
+                    df.to_csv(f'{local_path}/{file_name}.csv', index=False)
                     sftp.upload(remote_path, file_name)
 
                     file_entry = self.file_entry

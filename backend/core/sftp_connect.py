@@ -34,7 +34,7 @@ def upload(filename, path):
             with pysftp.Connection(**creds) as sftp:
                 print('Connected...')
                 local_path = cfg.sftp_local_path()
-                sftp.put(f'{local_path}/{filename}', f'{path}/{filename}', confirm=False)
+                sftp.put(f'{local_path}/{filename}', f'{path}/{filename}', confirm=True)
                 print(f'Uploaded successfully: {filename}')
         return True
     except Exception as ex:
