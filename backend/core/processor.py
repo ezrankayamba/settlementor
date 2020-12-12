@@ -52,7 +52,7 @@ class Processor(threading.Thread):
                     count = 0
                     for payment in models.Payment.objects.filter(consumer=consumer, status='Pending'):
                         try:
-                            tta_res, trans_id = tta.pay_settlement(ref_number=payment.reference_number, bank_account=payment.account_number,  amount=amount)
+                            tta_res, trans_id = tta.pay_settlement(ref_number=payment.reference_number, bank_account=payment.account_number,  amount=amount, bank_id=payment.bank_id)
                             payment.status = 'Success' if tta_res == 0 else 'Submitted' if tta_res == 99999 else 'Fail'
                             payment.result_code = tta_res
                             payment.trans_id = trans_id
