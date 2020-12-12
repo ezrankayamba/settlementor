@@ -39,7 +39,7 @@ class Processor(threading.Thread):
                         try:
                             company_id, amount, ref_number = row['CompanyID'], row['Amount'], row['ReferenceNumber']
                             logger.debug(f'{company_id}, {amount}, {ref_number}')
-                            cust = models.Customer.objects.filter(owner_id=company_id).first()
+                            cust = models.Customer.objects.filter(owner_id=company_id, status='Active').first()
                             if cust:
                                 models.Payment.objects.create(file_entry=self.file_entry, customer=cust, reference_number=ref_number,
                                                               bank_id=cust.bank_id, account_number=cust.account_number, consumer=consumer, amount=amount)
