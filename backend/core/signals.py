@@ -42,7 +42,7 @@ def notified_file_entry(sender, instance, created, **kwargs):
                 sftp.upload(instance.file_name_out, remote_path)
                 sig = sf.sign(f'{cfg.sftp_local_path()}/{instance.file_name_out}', '2020')
                 headers = {'Content-Type': 'application/json'}
-                for payment in Payment.objects.filter(consumer=instance.consumer, reference_number=instance.reference_number, status='Success'):
+                for payment in Payment.objects.filter(consumer=instance.consumer, reference_number=instance.file_reference_id, status='Success'):
                     total += payment.amount
                     count += 1
 
