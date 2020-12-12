@@ -31,7 +31,7 @@ def run():
             "fileName": new_file,
             "timestamp": "2020-11-09 13:34:43",
             "fileReferenceId": f"TPS100001{ts}",
-            "totalAmount": amount,
+            "totalAmount": total,
             "countOfRecords": count,
             "fileSignature": sig
         }
