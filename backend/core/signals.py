@@ -1,20 +1,18 @@
-from django.contrib.auth.models import User
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-import time
+import json
 import logging
+import threading
+import requests
 from concurrent.futures import ThreadPoolExecutor
 from .models import FileEntry, Consumer, Customer, Payment
 from .processor import Processor
 from .notification import send_message
-import threading
-import requests
 from datetime import datetime
 from config import config as cfg
 from core import secure_files as sf
 from core import sftp_connect as sftp
-
-import json
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +28,7 @@ def create_consumer(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=FileEntry)
 def notified_file_entry(sender, instance, created, **kwargs):
-    logger.debug(f'FileEntry created/updated: {instance}')
+    logger.debug("FileEntry created/updated: %s", instance)
     if created:
         logger.debug(f'Notified: {instance}')
         proc = Processor(instance)
@@ -38,29 +36,31 @@ def notified_file_entry(sender, instance, created, **kwargs):
         proc.start()
     else:
         def run():
-            logger.debug(f'FileEntry updated: {instance}')
-            remote_path = cfg.sftp_tigo_path()
-            sftp.upload(instance.file_name_out, remote_path)
-            sig = sf.sign(f'{cfg.sftp_local_path()}/{instance.file_name_out}', '2020')
-            headers = {'Content-Type': 'application/json'}
-            for payment in Payment.objects.filter(consumer=instance.consumer, reference_number=instance.reference_number, status='Success'):
-                total += payment.amount
-                count += 1
+            logger.debug('FileEntry updated: %s', instance)
+            try:
+                remote_path = cfg.sftp_tigo_path()
+                sftp.upload(instance.file_name_out, remote_path)
+                sig = sf.sign(f'{cfg.sftp_local_path()}/{instance.file_name_out}', '2020')
+                headers = {'Content-Type': 'application/json'}
+                for payment in Payment.objects.filter(consumer=instance.consumer, reference_number=instance.reference_number, status='Success'):
+                    total += payment.amount
+                    count += 1
 
-            data = {
-                "fileName": instance.file_name_out,
-                "timestamp": datetime.now().isoformat(timespec='minutes'),
-                "fileReferenceId": instance.file_reference_id,
-                "totalAmountPaid": total,
-                "countOfRecordsPaid": count,
-                "fileSignature": sig
-            }
-            url = 'http://accessgwtest.tigo.co.tz:8080/LipiaMafuta2TigoFileShared'
-            res = requests.post(url, json=data, headers=headers)
-            if res.ok:
-                logger.info('Success result callback: ', res.text)
-            else:
-                logger.error('Fail result callback', res.text)
+                data = {
+                    "fileName": instance.file_name_out,
+                    "timestamp": datetime.now().isoformat(timespec='minutes'),
+                    "fileReferenceId": instance.file_reference_id,
+                    "totalAmountPaid": total,
+                    "countOfRecordsPaid": count,
+                    "fileSignature": sig
+                }
+                res = requests.post(cfg.result_file_url(), json=data, headers=headers)
+                if res.ok:
+                    logger.info('Success result callback: %s', res.text)
+                else:
+                    logger.error('Fail result callback: %s', res.text)
+            except Exception as ex:
+                logger.error("Error processing Result file sending: %s", ex)
         t = threading.Thread(target=run)
         t.start()
 
