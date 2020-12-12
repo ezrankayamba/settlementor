@@ -3,8 +3,10 @@ import requests
 import re
 import xmltodict as xml
 from config import config as cfg
+import logging
 
 
+logger = logging.getLogger(__name__)
 pattern = re.compile(r'\s+')
 
 
@@ -24,7 +26,7 @@ def pay_settlement(ref_number,   bank_account,  amount, bank_id='CRDB',  termina
             </Function>
         </TCSRequest>
     '''
-    print(req_xml)
+    logger.debug(req_xml)
     headers = {
         'Content-Type': 'text/xml'
     }
@@ -32,20 +34,20 @@ def pay_settlement(ref_number,   bank_account,  amount, bank_id='CRDB',  termina
     res = requests.post(cfg.tta_url(), req_xml, headers=headers)
     if res.ok:
         res_xml = res.text
-        print(res_xml)
+        logger.info(res_xml)
         res = xml.parse(res_xml)['TCSReply']
-        print(res)
+        logger.debug(res)
         result = int(res['Result'])
         message = res['Message']
         if result == 0:
-            print('Success: ', '0:', message)
+            logger.info('Success: %s %s', '0:', message)
             trans_id = res['param11']
             return (0, trans_id)
         else:
-            print('Failed: ', result, ':', message)
+            logger.error('Failed: %s %s %s', result, ':', message)
             return (result, None)
     else:
-        print('Failed: ', res.status_code)
+        logger.error('Failed: %s', res.status_code)
     return (-1, None)
 
 
@@ -61,7 +63,7 @@ def check_balance(terminal_type='API'):
             </Function>
         </TCSRequest>
     '''
-    print(req_xml)
+    logger.debug(req_xml)
     headers = {
         'Content-Type': 'text/xml'
     }
@@ -75,11 +77,12 @@ def check_balance(terminal_type='API'):
             if result == 0:
                 balance = res['param1']
                 return (0, balance)
-            else:
-                print('Failed: ', result, ':', message)
+
+            logger.error('Failed: %s %s %s', result, ':', message)
 
         else:
-            print('Failed: ', res.status_code)
+            logger.error('Failed: %s', res.status_code)
         return (-1, 'Fail')
     except Exception as ex:
+        logger.error('Error checking balance: %s', ex)
         return (-2, ex)
