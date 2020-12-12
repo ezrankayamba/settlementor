@@ -13,7 +13,7 @@ def run():
     ts = int(round(time.time() * 1000))
     new_file = f'{ts}_{file}'
     copyfile(f'{cfg.sftp_local_path()}/{file}', f'{cfg.sftp_local_path()}/{new_file}')
-    sftp.upload(new_file, cfg.sftp_tigo_path())
+    sftp.upload(new_file, cfg.sftp_tapsoa_path())
     # sftp.upload(cfg.sftp_tigo_path(), file)
     sig = sf.sign(f'{cfg.sftp_local_path()}/{new_file}', '2020')
     print(sig)
