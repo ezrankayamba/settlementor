@@ -58,9 +58,9 @@ def notified_file_entry(sender, instance, created, **kwargs):
             url = 'http://accessgwtest.tigo.co.tz:8080/LipiaMafuta2TigoFileShared'
             res = requests.post(url, json=data, headers=headers)
             if res.ok:
-                print('Success: ', res.text)
+                logger.info('Success result callback: ', res.text)
             else:
-                print('Fail', res.text)
+                logger.error('Fail result callback', res.text)
         t = threading.Thread(target=run)
         t.start()
 
