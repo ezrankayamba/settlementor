@@ -15,7 +15,7 @@ def run():
     copyfile(f'{cfg.sftp_local_path()}/{file}', f'{cfg.sftp_local_path()}/{new_file}')
     sftp.upload(new_file, cfg.sftp_tigo_path())
     # sftp.upload(cfg.sftp_tigo_path(), file)
-    sig = sf.sign(new_file, '2020')
+    sig = sf.sign(f'{cfg.sftp_local_path()}/{new_file}', '2020')
     print(sig)
     token = "HU3eV4AdXuzKqE2jNn7p5KGsybvVst"
     with open(f'{cfg.sftp_local_path()}/{new_file}') as csv_file:
