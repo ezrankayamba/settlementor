@@ -115,11 +115,6 @@ class WhiteListApprovalView(APIView):
         try:
             if not consumer.user.is_staff:
                 raise Exception('You must be Tigo staff to execute this API call')
-            bal_res, balance = tta.check_balance()
-            if not (bal_res == 0):
-                raise Exception(f'Not able to fetch balance: {bal_res}')
-            if balance < data['totalAmount']:
-                raise Exception(f'Not enough balance: {balance}')
 
             owner_id = data['companyID']
             cust = models.Customer.objects.get(owner_id=owner_id)
