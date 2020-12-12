@@ -5,6 +5,7 @@ import time
 from core import secure_files as sf
 import requests
 import csv
+from datetime import datetime
 
 
 def run():
@@ -29,7 +30,7 @@ def run():
         headers = {'Content-Type': 'application/json', 'Authorization': f'Bearer {token}'}
         data = {
             "fileName": new_file,
-            "timestamp": "2020-11-09 13:34:43",
+            "timestamp": datetime.now().isoformat(timespec='minutes'),
             "fileReferenceId": f"TPS100001{ts}",
             "totalAmount": total,
             "countOfRecords": count,

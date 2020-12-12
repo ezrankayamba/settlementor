@@ -40,7 +40,7 @@ def notified_file_entry(sender, instance, created, **kwargs):
             logger.debug(f'FileEntry updated: {instance}')
             data = {
                 "fileName": "tapsoa_20201109_payments_result.csv",
-                "timestamp": "2020-11-09 13:34:43",
+                "timestamp": datetime.now().isoformat(timespec='minutes'),
                 "fileReferenceId": "TPS100001",
                 "totalAmountPaid": 17000000,
                 "countOfRecordsPaid": 46,
