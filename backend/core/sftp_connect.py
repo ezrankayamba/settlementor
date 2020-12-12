@@ -24,7 +24,7 @@ def download(path, filename):
         return False
 
 
-def upload(path, filename):
+def upload(filename, path):
     try:
         with open('credentials.json') as creds_file:
             creds = json.load(creds_file)

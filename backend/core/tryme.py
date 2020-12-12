@@ -4,4 +4,4 @@ from config import config as cfg
 
 def run():
     file = 'test.csv'
-    sftp.upload(f'{cfg.sftp_local_path}/{file}', f'{cfg.sftp_tigo_path()}/{file}')
+    sftp.upload(file, cfg.sftp_tigo_path())
