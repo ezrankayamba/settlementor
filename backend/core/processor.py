@@ -77,8 +77,8 @@ class Processor(threading.Thread):
 
                     sftp.upload(file_name, remote_path)
 
-                    sig = sf.sign(file_name, '2020')
-                    headers = {'Content-Type': 'application/json', 'Authorization': f'Bearer {token}'}
+                    sig = sf.sign(f'{local_path}/{file_name}', '2020')
+                    headers = {'Content-Type': 'application/json'}
                     data = {
                         "fileName": file_name,
                         "timestamp": datetime.now().isoformat(timespec='minutes'),
