@@ -4,14 +4,15 @@ from django.dispatch import receiver
 import time
 import logging
 from concurrent.futures import ThreadPoolExecutor
-
-from .models import FileEntry, Consumer, Customer
+from .models import FileEntry, Consumer, Customer, Payment
 from .processor import Processor
 from .notification import send_message
 import threading
 import requests
 from datetime import datetime
 from config import config as cfg
+from core import secure_files as sf
+from core import sftp_connect as sftp
 
 import json
 
@@ -31,23 +32,35 @@ def create_consumer(sender, instance, created, **kwargs):
 def notified_file_entry(sender, instance, created, **kwargs):
     logger.debug(f'FileEntry created/updated: {instance}')
     if created:
-        logger.debug(f'Notified: {instance.file_name}')
+        logger.debug(f'Notified: {instance}')
         proc = Processor(instance)
         proc.daemon = True
         proc.start()
     else:
         def run():
             logger.debug(f'FileEntry updated: {instance}')
-            data = {
-                "fileName": "tapsoa_20201109_payments_result.csv",
-                "timestamp": datetime.now().isoformat(timespec='minutes'),
-                "fileReferenceId": "TPS100001",
-                "totalAmountPaid": 17000000,
-                "countOfRecordsPaid": 46,
-                "fileSignature": "The signature here"
-            }
+            remote_path = cfg.sftp_tigo_path()
+            sftp.upload(f'{cfg.sftp_local_path()}/{instance.file_name_out}', remote_path)
+            sig = sf.sign(f'{cfg.sftp_local_path()}/{instance.file_name_out}', '2020')
             headers = {'Content-Type': 'application/json'}
-            requests.post(cfg.result_file_url(), data=json.dumps(data), headers=headers)
+            for payment in Payment.objects.filter(consumer=instance.consumer, reference_number=instance.reference_number, status='Success'):
+                total += payment.amount
+                count += 1
+
+            data = {
+                "fileName": instance.file_name_out,
+                "timestamp": datetime.now().isoformat(timespec='minutes'),
+                "fileReferenceId": instance.file_reference_id,
+                "totalAmountPaid": total,
+                "countOfRecordsPaid": count,
+                "fileSignature": sig
+            }
+            url = 'http://accessgwtest.tigo.co.tz:8080/LipiaMafuta2TigoFileShared'
+            res = requests.post(url, json=data, headers=headers)
+            if res.ok:
+                print('Success: ', res.text)
+            else:
+                print('Fail', res.text)
         t = threading.Thread(target=run)
         t.start()
 

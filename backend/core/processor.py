@@ -22,13 +22,13 @@ class Processor(threading.Thread):
 
     def run(self):
         try:
-            if not sftp.download(cfg.sftp_tapsoa_path(), self.file_entry.file_name):
+            if not sftp.download(cfg.sftp_tapsoa_path(), self.file_entry.file_name_in):
                 raise Exception('Failure on downloading file')
 
             consumer = self.file_entry.consumer
-            logger.debug(f'{consumer.tp_username} = {self.file_entry.file_name}')
+            logger.debug(f'{consumer.tp_username} = {self.file_entry.file_name_in}')
             logger.debug(f'Signature: { self.file_entry.signature}')
-            path = f'files/{self.file_entry.file_name}'
+            path = f'files/{self.file_entry.file_name_in}'
             with open(path) as csv_file:
                 verified = sf.verify(path, self.file_entry.signature)
                 logger.debug(f'Verified:  {verified}')
@@ -67,37 +67,19 @@ class Processor(threading.Thread):
                     df2 = pd.DataFrame.from_records(payments.values_list('reference_number',  'status', 'result_code', 'trans_id'), columns=['reference_number',  'status', 'result_code', 'trans_id'])
                     df2.rename(columns={'reference_number': 'ReferenceNumber', 'status': 'Status', 'result_code': 'ResultCode', 'trans_id': 'TransID'}, inplace=True)
                     logger.debug(df2.head(2))
-                    df1 = pd.read_csv(f'{cfg.sftp_local_path()}/{self.file_entry.file_name}')
+                    df1 = pd.read_csv(f'{cfg.sftp_local_path()}/{self.file_entry.file_name_in}')
                     logger.debug(df1.head(2))
                     df = pd.merge(df1, df2[["ReferenceNumber", "Status", "ResultCode", "TransID"]], on='ReferenceNumber', how='left')
                     file_name = f'Payment_Result_File_{self.file_entry.file_reference_id}.csv'
                     local_path = cfg.sftp_local_path()
-                    remote_path = cfg.sftp_tigo_path()
-                    df.to_csv(f'{local_path}/{file_name}', index=False)
-
-                    sftp.upload(file_name, remote_path)
-
-                    sig = sf.sign(f'{local_path}/{file_name}', '2020')
-                    headers = {'Content-Type': 'application/json'}
-                    data = {
-                        "fileName": file_name,
-                        "timestamp": datetime.now().isoformat(timespec='minutes'),
-                        "fileReferenceId": self.file_entry.file_reference_id,
-                        "totalAmountPaid": total,
-                        "countOfRecordsPaid": count,
-                        "fileSignature": sig
-                    }
-                    url = 'http://accessgwtest.tigo.co.tz:8080/LipiaMafuta2TigoFileShared'
-                    res = requests.post(url, json=data, headers=headers)
-                    if res.ok:
-                        print('Success: ', res.text)
-                    else:
-                        print('Fail', res.text)
+                    res_file = f'{local_path}/{file_name}'
+                    df.to_csv(res_file, index=False)
 
                     file_entry = self.file_entry
                     file_entry.status = 'Processed'
+                    file_entry.file_name_out = file_name
                     file_entry.save()
                 else:
-                    logger.debug(f'Signature is not valid: {self.file_entry.file_name}')
+                    logger.debug(f'Signature is not valid: {self.file_entry.file_name_in}')
         except Exception as ex:
             logger.error(f"Error processing: {ex}")

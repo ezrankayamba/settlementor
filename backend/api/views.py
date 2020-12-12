@@ -80,7 +80,7 @@ class PaymentFileSharedView(APIView):
             f_ref_id = data['fileReferenceId']
             f_name = data['fileName']
             params = {
-                'file_name': f_name,
+                'file_name_in': f_name,
                 'timestamp': data['timestamp'],
                 'file_reference_id': f_ref_id,
                 'total_amount': data['totalAmount'],
