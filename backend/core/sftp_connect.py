@@ -16,7 +16,7 @@ def download(path, filename):
             with pysftp.Connection(**creds) as sftp:
                 print('Connected...')
                 local_path = cfg.sftp_local_path()
-                sftp.get(f'{path}/{filename}', f'{local_path}{filename}')
+                sftp.get(f'{path}/{filename}', f'{local_path}/{filename}')
                 print(f'Downloaded successfully: {filename}')
         return True
     except Exception as ex:
@@ -34,7 +34,7 @@ def upload(path, filename):
             with pysftp.Connection(**creds) as sftp:
                 print('Connected...')
                 local_path = cfg.sftp_local_path()
-                sftp.put(f'{local_path}{filename}', f'{path}/{filename}')
+                sftp.put(f'{local_path}/{filename}', f'{path}/{filename}')
                 print(f'Uploaded successfully: {filename}')
         return True
     except Exception as ex:
