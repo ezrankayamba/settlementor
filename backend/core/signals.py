@@ -40,7 +40,7 @@ def notified_file_entry(sender, instance, created, **kwargs):
         def run():
             logger.debug(f'FileEntry updated: {instance}')
             remote_path = cfg.sftp_tigo_path()
-            sftp.upload(f'{cfg.sftp_local_path()}/{instance.file_name_out}', remote_path)
+            sftp.upload(instance.file_name_out, remote_path)
             sig = sf.sign(f'{cfg.sftp_local_path()}/{instance.file_name_out}', '2020')
             headers = {'Content-Type': 'application/json'}
             for payment in Payment.objects.filter(consumer=instance.consumer, reference_number=instance.reference_number, status='Success'):
