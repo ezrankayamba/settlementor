@@ -14,13 +14,13 @@ def download(path, filename):
             cnopts.hostkeys = None
             creds['cnopts'] = cnopts
             with pysftp.Connection(**creds) as sftp:
-                print('Connected...')
+                logger.debug('Connected...')
                 local_path = cfg.sftp_local_path()
                 sftp.get(f'{path}/{filename}', f'{local_path}/{filename}')
-                print(f'Downloaded successfully: {filename}')
+                logger.info(f'Downloaded successfully: {filename}')
         return True
     except Exception as ex:
-        logger.debug(f'Error Downloading: {ex}')
+        logger.error(f'Error Downloading: {ex}')
         return False
 
 
@@ -32,11 +32,11 @@ def upload(filename, path):
             cnopts.hostkeys = None
             creds['cnopts'] = cnopts
             with pysftp.Connection(**creds) as sftp:
-                print('Connected...')
+                logger.debug('Connected...')
                 local_path = cfg.sftp_local_path()
                 sftp.put(f'{local_path}/{filename}', f'{path}/{filename}', confirm=True)
-                print(f'Uploaded successfully: {filename}')
+                logger.info(f'Uploaded successfully: {filename}')
         return True
     except Exception as ex:
-        logger.debug(f'Error Uploading: : {ex}')
+        logger.error(f'Error Uploading: : {ex}')
         return False
