@@ -20,7 +20,7 @@ def generate_file(name):
             data = {
                 'CompanyID': owner_id,
                 'Amount': 1000,
-                'ReferenceNumber': f'{i}{ts}'
+                'ReferenceNumber': f'T{i}{ts}'
             }
             writer.writerow(data)
 
