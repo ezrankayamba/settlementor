@@ -49,12 +49,12 @@ class Processor(threading.Thread):
                         payment.trans_id = trans_id
                         payment.save()
                     payments = models.Payment.objects.filter(file_entry=self.file_entry)
-                    df2 = pd.DataFrame(list(payments.values()))
+                    df2 = pd.DataFrame.from_records(payments.values_list())
                     df2.rename(columns={'ref_number': 'ReferenceNumber'}, inplace=True)
                     logger.debug(df2.head(2))
-                    df1 = pd.DataFrame(self.file_entry.file_name)
+                    df1 = pd.read_csv(f'{cfg.sftp_local_path()}/{self.file_entry.file_name})
                     logger.debug(df1.head(2))
-                    df = pd.merge(df1, df2[["TRANSFER_ID", "TransStatus", "ReceiptNo"]], on='TRANSFER_ID', how='left')
+                    df = pd.merge(df1, df2[["TRANSFER_ID", "TransStatus", "ReceiptNo"]], on='ReferenceNumber', how='left')
                     file_name = f'Payment_Result_File_{self.file_entry.file_reference_id}.csv'
                     local_path = cfg.sftp_local_path()
                     remote_path = cfg.sftp_tigo_path()
