@@ -13,11 +13,14 @@ def generate_file(name):
         csv_columns = ['CompanyID', 'Amount', 'ReferenceNumber']
         writer = csv.DictWriter(f, fieldnames=csv_columns)
         writer.writeheader()
+        i = 0
+        ts = int(round(time.time() * 1000))
         for owner_id in [7, 8]:
+            i += 1
             data = {
                 'CompanyID': owner_id,
                 'Amount': 1000,
-                'ReferenceNumber': int(round(time.time() * 1000))
+                'ReferenceNumber': f'{i}{ts}'
             }
             writer.writerow(data)
 
