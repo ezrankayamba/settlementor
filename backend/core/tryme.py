@@ -40,4 +40,4 @@ def run():
         if res.ok:
             print('Success: ', res.text)
         else:
-            print('Fail': res.text)
+            print('Fail', res.text)
