@@ -35,14 +35,14 @@ def run():
         count = 0
         total = 0
         for row in reader:
-            company_id, amount, ref_number = row['CompanyID'], row['Amount'], row['ReferenceNumber']
+            _, amount, _ = row['CompanyID'], row['Amount'], row['ReferenceNumber']
             count += 1
             total += float(amount)
         headers = {'Content-Type': 'application/json', 'Authorization': f'Bearer {token}'}
         data = {
             "fileName": new_file,
             "timestamp": datetime.now().isoformat(timespec='minutes'),
-            "fileReferenceId": f"TPS100001{ts}",
+            "fileReferenceId": f"TPS{t_stamp}",
             "totalAmount": total,
             "countOfRecords": count,
             "fileSignature": sig
