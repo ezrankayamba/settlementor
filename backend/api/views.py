@@ -14,6 +14,7 @@ class WhitelistView(APIView):
 
     def post(self, request, format=None):
         data = request.data
+        logger.debug("WhitelistView: %s", data)
         owner_id = data['companyID']
         consumer = request.user.consumer
         command = data['command']
@@ -59,7 +60,7 @@ class WhitelistView(APIView):
             logger.error(ex)
             return Response({
                 'result': 906,
-                'message': f'Invalid request details or customer is not active'
+                'message': f'Invalid request details or customer is not active: {ex}'
             })
 
         return Response({
@@ -74,6 +75,7 @@ class PaymentFileSharedView(APIView):
 
     def post(self, request, format=None):
         data = request.data
+        logger.debug("PaymentFileSharedView: %s", data)
         consumer = request.user.consumer
         f_ref_id = None
         try:
@@ -110,6 +112,7 @@ class WhiteListApprovalView(APIView):
 
     def post(self, request, format=None):
         data = request.data
+        logger.debug("WhiteListApprovalView: %s", data)
         consumer = request.user.consumer
 
         try:
