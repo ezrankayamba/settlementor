@@ -4,6 +4,7 @@ from rest_framework import generics, permissions
 from rest_framework.response import Response
 from core import models, tta
 import logging
+from django.db import IntegrityError
 
 logger = logging.getLogger(__name__)
 
@@ -58,9 +59,14 @@ class WhitelistView(APIView):
                 })
         except Exception as ex:
             logger.error(ex)
+            err_code = 906
+            err_msg = f'Invalid request or missing details: {ex}'
+            if 'unique constraint' in str(ex):
+                err_code = 907
+                err_msg = 'Duplicate entry detected, check your inputs and resubmit!'
             return Response({
-                'result': 906,
-                'message': f'Invalid request details or customer is not active: {ex}'
+                'result': err_code,
+                'message': err_msg,
             })
 
         return Response({
@@ -93,10 +99,14 @@ class PaymentFileSharedView(APIView):
             models.FileEntry.objects.create(**params)
         except Exception as ex:
             logger.error(ex)
+            err_code = 906
+            err_msg = f'Invalid request or missing details: {ex}'
+            if 'unique constraint' in str(ex):
+                err_code = 907
+                err_msg = 'Duplicate entry detected, check your inputs and resubmit!'
             return Response({
-                'result': 906,
-                'message': f'Invalid request or missing details: {ex}',
-                'fileReferenceId': f_ref_id
+                'result': err_code,
+                'message': err_msg,
             })
 
         return Response({
@@ -147,9 +157,14 @@ class WhiteListApprovalView(APIView):
                 raise Exception('Invalid or no approval "status" provided')
         except Exception as ex:
             logger.error(ex)
+            err_code = 906
+            err_msg = f'Invalid request or missing details: {ex}'
+            if 'unique constraint' in str(ex):
+                err_code = 907
+                err_msg = 'Duplicate entry detected, check your inputs and resubmit!'
             return Response({
-                'result': 906,
-                'message': f'Invalid request or missing details: {ex}',
+                'result': err_code,
+                'message': err_msg,
             })
 
         return Response({
