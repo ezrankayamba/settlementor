@@ -44,3 +44,11 @@ def sftp_local_path():
 
 def consumer_data(name='TTA_TAPSOA'):
     return (config.get(name, 'username'), config.get(name, 'password'), config.get(name, 'brand_id'))
+
+
+def ldap_server_uri():
+    return config.get('LDAP', 'LDAP_SERVER_URI')
+
+
+def ldap_search_base():
+    return config.get('LDAP', 'LDAP_SEARCH_BASE')

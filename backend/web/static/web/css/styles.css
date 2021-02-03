@@ -1,0 +1,27 @@
+.login {
+    display: grid;
+    align-items: center;
+}
+
+.login form {
+    margin: 1em auto;
+    display: inline-block;
+    /* padding: 2em; */
+}
+
+.login form .fields p{
+    display: grid;
+}
+
+.login form input {
+    min-width: 20em;
+    padding: .2em .5em;
+}
+
+.errorlist {
+    color: red;
+}
+
+form .fields li {
+    /* max-width: 24em; */
+}

@@ -35,8 +35,11 @@ INSTALLED_APPS = [
 
     'core.apps.CoreConfig',
     'api',
+    'web',
     'config',
 ]
+
+AUTHENTICATION_BACKENDS = ['core.ldap.LDAPBackend']
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -65,6 +68,8 @@ TEMPLATES = [
         },
     },
 ]
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'  # new
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
@@ -104,6 +109,7 @@ REST_FRAMEWORK = {
         'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
     ]
 }
+
 # APPEND_SLASH = False
 
 # Internationalization

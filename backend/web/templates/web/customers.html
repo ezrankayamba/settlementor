@@ -1,0 +1,58 @@
+{% extends "web/base.html" %}
+
+{% block title %}Customers{% endblock %}
+
+{% block content %}
+<h4>Petrol Station Owners</h4>
+<table class="table table-sm table-bordered">
+    <thead class="table-light">
+        <tr>
+            <!-- <th scope="col">#</th> -->
+            <th scope="col">Owner ID</th>
+            <th scope="col">Owner Name</th>
+            <th scope="col">Bank ID</th>
+            <th scope="col">Account Number</th>
+            <th scope="col">Status</th>
+            <th scope="col">Command</th>
+            <th scope="col">Request</th>
+            <th scope="col">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for customer in customers %}
+        <tr>
+            <!-- <th scope="row">{{ customer.id }}</th> -->
+            <th scope="row">{{ customer.owner_id }}</th>
+            <td>{{ customer.owner_name }}</td>
+            <td>
+            {{ customer.bank_id }}
+            {% if customer.bank_id_req %}
+                => {{ customer.bank_id_req }}
+            {%endif%}
+            </td>
+            <td>
+            {{ customer.account_number }}
+            {% if customer.account_number_req %}
+                => {{ customer.account_number_req }}
+            {%endif%}
+            </td>
+            <td>{{ customer.status }}</td>
+            <td>{{ customer.command }}</td>
+            <td>{{ customer.request }}</td>
+            <td>
+                {% if customer.request == 'Initiated' %}
+                    <form method="POST" action="{% url 'customers'%}">
+                        {% csrf_token %}
+                        <input type="hidden" name="id" value="{{ customer.id }}"/>
+                        <button type="submit" name="action" value="Approved" class="btn btn-sm btn-success">Approve</button>
+                        <button type="submit" name="action" value="Rejected" class="btn btn-sm btn-warning">Reject</button>
+                    </form>
+                {% else %}
+                    <span>NA</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
