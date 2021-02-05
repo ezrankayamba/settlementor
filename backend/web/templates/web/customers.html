@@ -5,7 +5,8 @@
 {% block content %}
 <div class="filter-container">
     <h4>Petrol Station Owners</h4>
-    <form method="get">
+    <form method="POST">
+        {% csrf_token %}
         {{ customers.form.as_p }}
         <input type="submit" class="btn btn-primary btn-sm" />
     </form>
@@ -32,30 +33,30 @@
             <th scope="row">{{ customer.owner_id }}</th>
             <td>{{ customer.owner_name }}</td>
             <td>
-            {{ customer.bank_id }}
-            {% if customer.bank_id_req %}
+                {{ customer.bank_id }}
+                {% if customer.bank_id_req %}
                 => {{ customer.bank_id_req }}
-            {%endif%}
+                {%endif%}
             </td>
             <td>
-            {{ customer.account_number }}
-            {% if customer.account_number_req %}
+                {{ customer.account_number }}
+                {% if customer.account_number_req %}
                 => {{ customer.account_number_req }}
-            {%endif%}
+                {%endif%}
             </td>
             <td>{{ customer.status }}</td>
             <td>{{ customer.command }}</td>
             <td>{{ customer.request }}</td>
             <td>
                 {% if customer.request == 'Initiated' %}
-                    <form method="POST" action="{% url 'customers'%}">
-                        {% csrf_token %}
-                        <input type="hidden" name="id" value="{{ customer.id }}"/>
-                        <button type="submit" name="action" value="Approved" class="btn btn-sm btn-success">Approve</button>
-                        <button type="submit" name="action" value="Rejected" class="btn btn-sm btn-warning">Reject</button>
-                    </form>
+                <form method="POST" action="{% url 'customers'%}">
+                    {% csrf_token %}
+                    <input type="hidden" name="id" value="{{ customer.id }}" />
+                    <button type="submit" name="action" value="Approved" class="btn btn-sm btn-success">Approve</button>
+                    <button type="submit" name="action" value="Rejected" class="btn btn-sm btn-warning">Reject</button>
+                </form>
                 {% else %}
-                    <span>NA</span>
+                <span>NA</span>
                 {% endif %}
             </td>
         </tr>

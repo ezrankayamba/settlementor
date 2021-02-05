@@ -1,0 +1,44 @@
+{% extends "web/base.html" %}
+
+{% block title %}Customers{% endblock %}
+
+{% block content %}
+<div class="filter-container">
+    <h4>Payments</h4>
+    <form method="POST">
+        {% csrf_token %}
+        {{ payments.form.as_p }}
+        <input type="submit" class="btn btn-primary btn-sm" />
+    </form>
+</div>
+
+<table class="table table-sm table-bordered">
+    <thead class="table-light">
+        <tr>
+            <!-- <th scope="col">#</th> -->
+            <th scope="col">Reference No</th>
+            <th scope="col">Customer</th>
+            <th scope="col">Bank</th>
+            <th scope="col">Account No</th>
+            <th scope="col">Amount</th>
+            <th scope="col">Status</th>
+            <th scope="col">Result Code</th>
+            <th scope="col">Trans ID</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entry in payments.qs %}
+        <tr>
+            <th scope="row">{{ entry.reference_number }}</th>
+            <td>{{ entry.customer.owner_name }}</td>
+            <td>{{ entry.bank_id }}</td>
+            <td>{{ entry.account_number }}</td>
+            <td>{{ entry.amount }}</td>
+            <td>{{ entry.status }}</td>
+            <td>{{ entry.result_code }}</td>
+            <td>{{ entry.trans_id }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

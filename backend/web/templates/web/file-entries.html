@@ -1,0 +1,40 @@
+{% extends "web/base.html" %}
+
+{% block title %}Customers{% endblock %}
+
+{% block content %}
+<div class="filter-container">
+    <h4>File Entries</h4>
+    <form method="POST">
+        {% csrf_token %}
+        {{ file_entries.form.as_p }}
+        <input type="submit" class="btn btn-primary btn-sm" />
+    </form>
+</div>
+
+<table class="table table-sm table-bordered">
+    <thead class="table-light">
+        <tr>
+            <!-- <th scope="col">#</th> -->
+            <th scope="col">File Ref</th>
+            <th scope="col">Input File</th>
+            <th scope="col">Output File</th>
+            <th scope="col">Total Amount</th>
+            <th scope="col">Status</th>
+            <th scope="col">Type</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entry in file_entries.qs %}
+        <tr>
+            <th scope="row">{{ entry.file_reference_id }}</th>
+            <td>{{ entry.file_name_in }}</td>
+            <td>{{ entry.file_name_out }}</td>
+            <td>{{ entry.total_amount }}</td>
+            <td>{{ entry.status }}</td>
+            <td>{{ entry.entry_type }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

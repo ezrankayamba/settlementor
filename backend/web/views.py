@@ -15,11 +15,23 @@ logger = logging.getLogger(__name__)
 @login_required
 def customers(request):
     resp = None
-    if request.method == 'POST':
+    if request.method == 'PUT':
         resp = action_pending(request)
         return redirect('customers', {})
-    f = filters.CustomerFilter(request.GET, queryset=models.Customer.objects.all())
+    f = filters.CustomerFilter(request.POST, queryset=models.Customer.objects.all())
     return render(request, 'web/customers.html', {'customers': f})
+
+
+@login_required
+def payments(request):
+    f = filters.PaymentFilter(request.POST, queryset=models.Payment.objects.all())
+    return render(request, 'web/payments.html', {'payments': f})
+
+
+@login_required
+def file_entries(request):
+    f = filters.FileEntryFilter(request.POST, queryset=models.FileEntry.objects.all())
+    return render(request, 'web/file-entries.html', {'file_entries': f})
 
 
 @login_required
