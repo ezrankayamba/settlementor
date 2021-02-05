@@ -27,7 +27,8 @@ class Customer(models.Model):
     approval_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f'{self.owner_id} - {self.owner_name}|{self.bank_id}/{self.account_number}|{self.status}'
+        # return f'{self.owner_id} - {self.owner_name}|{self.bank_id}/{self.account_number}|{self.status}'
+        return self.owner_name
 
 
 class FileEntry(models.Model):

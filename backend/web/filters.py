@@ -4,7 +4,7 @@ from django import forms
 from asgiref.sync import sync_to_async
 
 STATUS_CHOICES = [
-    ('', 'All'),
+    ('', '--------'),
     ('Active', 'Active'),
     ('Pending', 'Pending'),
     ('Removed', 'Removed'),
@@ -12,14 +12,14 @@ STATUS_CHOICES = [
 ]
 
 TRANS_STATUS_CHOICES = [
-    ('', 'All'),
+    ('', '--------'),
     ('Success', 'Success'),
     ('Fail', 'Fail'),
     ('Pending', 'Pending'),
 ]
 
 BANK_CHOICES = [
-    ('', 'All'),
+    ('', '--------'),
     ('CRDB', 'CRDB'),
     ('EXIM', 'EXIM'),
     ('NMB', 'NMB'),
@@ -28,7 +28,7 @@ BANK_CHOICES = [
 
 
 ENTRY_TYPE_CHOICES = [
-    ('', 'All'),
+    ('', '--------'),
     ('PAYMENT_FILE', 'Payment File'),
 ]
 
@@ -45,11 +45,6 @@ class CustomerFilter(django_filters.FilterSet):
 
 
 class PaymentFilter(django_filters.FilterSet):
-    owner_names = []
-    for x in models.Customer.objects.all():
-        owner_names.append((x.owner_name, x.owner_name))
-
-    customer__owner_name = django_filters.CharFilter(widget=forms.Select(choices=owner_names),)
     bank_id = django_filters.CharFilter(
         widget=forms.Select(choices=BANK_CHOICES),
     )
@@ -59,7 +54,7 @@ class PaymentFilter(django_filters.FilterSet):
 
     class Meta:
         model = models.Payment
-        fields = []
+        fields = ['customer']
 
 
 class FileEntryFilter(django_filters.FilterSet):
