@@ -54,9 +54,15 @@ def action_pending(request):
             cust.save()
             logger.info(f'Successfully approved customer whitelist [{cust.command}] for customer: {cust_id}')
         elif data.get('action') == 'Rejected':  # Rejected
+            if cust.command in ['DELETE', 'UPDATE']:
+                new_status = 'Active'
+            else:
+                new_status = 'Removed'
+                cust.owner_id = f'{cust.id}_{cust.owner_id}'
             cust.request = 'Rejected'
             cust.account_number_req = None
             cust.bank_id_req = None
+            cust.status = new_status
             cust.save()
             logger.info(f'Successfully rejected customer whitelist [{cust.command}] for customer: {cust_id}')
         else:
