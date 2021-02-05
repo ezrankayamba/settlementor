@@ -1,6 +1,7 @@
 import django_filters
 from core import models
 from django import forms
+from asgiref.sync import sync_to_async
 
 STATUS_CHOICES = [
     ('', 'All'),
@@ -44,7 +45,10 @@ class CustomerFilter(django_filters.FilterSet):
 
 
 class PaymentFilter(django_filters.FilterSet):
-    owner_names = [(x.owner_name, x.owner_name) for x in models.Customer.objects.all()]
+    owner_names = []
+    for x in models.Customer.objects.all():
+        owner_names.append((x.owner_name, x.owner_name))
+
     customer__owner_name = django_filters.CharFilter(widget=forms.Select(choices=owner_names),)
     bank_id = django_filters.CharFilter(
         widget=forms.Select(choices=BANK_CHOICES),
