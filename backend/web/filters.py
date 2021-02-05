@@ -3,6 +3,7 @@ from core import models
 from django import forms
 
 STATUS_CHOICES = [
+    ('', 'All'),
     ('Active', 'Active'),
     ('Pending', 'Pending'),
     ('Removed', 'Removed'),
