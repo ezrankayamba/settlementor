@@ -22,15 +22,11 @@
     color: red;
 }
 
-form .fields li {
-    /* max-width: 24em; */
-}
 
 .filter-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-top: .5em;
 }
 .filter-container  form {
     display: flex;
@@ -53,4 +49,9 @@ form .fields li {
 
 .filter-container  form p input[type=text] {
     padding: .1em .2em;
+}
+
+
+.container.main{
+    padding-top: .5em;
 }
