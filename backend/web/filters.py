@@ -12,11 +12,10 @@ STATUS_CHOICES = [
 
 
 class CustomerFilter(django_filters.FilterSet):
-    owner_name = django_filters.CharFilter(lookup_expr='iexact')
     status = django_filters.CharFilter(
         widget=forms.Select(choices=STATUS_CHOICES),
     )
 
     class Meta:
         model = models.Customer
-        fields = ['owner_id']
+        fields = ['owner_name']
