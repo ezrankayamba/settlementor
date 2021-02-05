@@ -44,7 +44,8 @@ class CustomerFilter(django_filters.FilterSet):
 
 
 class PaymentFilter(django_filters.FilterSet):
-    customer__owner_name = django_filters.CharFilter(widget=forms.Select(choices=[(x.owner_name, x.owner_name) for x in models.Customer.objects.all()]),)
+    owner_names = [(x.owner_name, x.owner_name) for x in models.Customer.objects.all()]
+    customer__owner_name = django_filters.CharFilter(widget=forms.Select(choices=owner_names),)
     bank_id = django_filters.CharFilter(
         widget=forms.Select(choices=BANK_CHOICES),
     )
