@@ -25,3 +25,32 @@
 form .fields li {
     /* max-width: 24em; */
 }
+
+.filter-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: .5em;
+}
+.filter-container  form {
+    display: flex;
+    gap: .4em;
+    align-items: center;
+}
+
+.filter-container  form input[type=submit]{
+    margin-top: .5em;
+}
+
+.filter-container  form p {
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-container  form p select {
+    padding: .18em .1em;
+}
+
+.filter-container  form p input[type=text] {
+    padding: .1em .2em;
+}

@@ -3,7 +3,14 @@
 {% block title %}Customers{% endblock %}
 
 {% block content %}
-<h4>Petrol Station Owners</h4>
+<div class="filter-container">
+    <h4>Petrol Station Owners</h4>
+    <form method="get">
+        {{ customers.form.as_p }}
+        <input type="submit" class="btn btn-primary btn-sm" />
+    </form>
+</div>
+
 <table class="table table-sm table-bordered">
     <thead class="table-light">
         <tr>
@@ -19,7 +26,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for customer in customers %}
+        {% for customer in customers.qs %}
         <tr>
             <!-- <th scope="row">{{ customer.id }}</th> -->
             <th scope="row">{{ customer.owner_id }}</th>

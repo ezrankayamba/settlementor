@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from core import models
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -8,6 +7,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 import logging
 from django.db import IntegrityError
+from . import filters
 
 logger = logging.getLogger(__name__)
 
@@ -16,9 +16,10 @@ logger = logging.getLogger(__name__)
 def customers(request):
     resp = None
     if request.method == 'POST':
-        print(request.POST)
         resp = action_pending(request)
-    return render(request, 'web/customers.html', {'customers': models.Customer.objects.all()})
+        return redirect('customers', {})
+    f = filters.CustomerFilter(request.GET, queryset=models.Customer.objects.all())
+    return render(request, 'web/customers.html', {'customers': f})
 
 
 @login_required
