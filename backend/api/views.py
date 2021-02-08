@@ -64,6 +64,7 @@ class WhitelistView(APIView):
             if 'unique constraint' in str(ex):
                 err_code = 907
                 err_msg = 'Duplicate entry detected, check your inputs and resubmit!'
+            logger.error(f'{err_code}: {err_msg}')
             return Response({
                 'result': err_code,
                 'message': err_msg,
