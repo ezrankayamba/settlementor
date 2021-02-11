@@ -17,6 +17,7 @@ def customers(request):
     resp = None
     if request.method == 'PUT':
         resp = action_pending(request)
+        print(resp)
         return redirect('customers', {})
     f = filters.CustomerFilter(request.POST, queryset=models.Customer.objects.all())
     return render(request, 'web/customers.html', {'customers': f})
@@ -39,7 +40,6 @@ def staff_users(request):
     return render(request, 'web/staff-users.html', {'users': User.objects.filter(is_staff=True)})
 
 
-@login_required
 def action_pending(request):
     data = request.POST
     logger.debug("WhiteListApprovalView: %s", data)
