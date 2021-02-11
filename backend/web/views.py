@@ -9,13 +9,59 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 import logging
 from django.db import IntegrityError
 from . import filters
+from .decorators import otp_required
+from .forms import OTPForm
+from asgiref.sync import sync_to_async
+from core.notification import send_message
+from random import randint
+import threading
 
 logger = logging.getLogger(__name__)
 
 PAGE_SIZE = 10
 
 
+def send_otp(request):
+    to = request.session.get('phone', None)
+    otp = randint(100000, 999999)
+    print(to, otp)
+    request.session['otp'] = str(otp)
+    msg = f'{otp} is your OTP for Settlementor. It will expire in 3 minutes'
+    logger.debug(f'Receiver: {to}, OTP: {msg}')
+    t = threading.Thread(target=send_message, args=[msg, to])
+    t.setDaemon(True)
+    t.start()
+    # send_message(msg, to)
+
+
 @login_required
+def verify_otp(request):
+    otp = request.session.get('otp', None)
+    if request.method == 'POST':
+        if 'action' in request.POST and request.POST['action'] == 'RESEND':
+            print('Resend OTP')
+            send_otp(request)
+        else:
+            form = OTPForm(request.POST)
+            if form.is_valid() and 'otp' in form.cleaned_data:
+                data = form.cleaned_data
+                new_otp = data['otp']
+                print('Verify: ', otp, new_otp)
+                if otp == new_otp:
+                    del request.session['otp']
+                    request.session['otp-verified'] = True
+                    return redirect('customers')
+        return redirect('verify-otp')
+    else:
+        form = OTPForm()
+    ctx = {'form': form}
+    if not otp:
+        send_otp(request)
+    return render(request, 'registration/verify-otp.html', ctx)
+
+
+@login_required
+@otp_required
 def customers(request):
     resp = None
     if request.method == 'POST':
@@ -40,18 +86,21 @@ def customers(request):
 
 
 @login_required
+@otp_required
 def payments(request):
     f = filters.PaymentFilter(request.POST, queryset=models.Payment.objects.all())
     return render(request, 'web/payments.html', {'payments': f})
 
 
 @login_required
+@otp_required
 def file_entries(request):
     f = filters.FileEntryFilter(request.POST, queryset=models.FileEntry.objects.all())
     return render(request, 'web/file-entries.html', {'file_entries': f})
 
 
 @login_required
+@otp_required
 def staff_users(request):
     return render(request, 'web/staff-users.html', {'users': User.objects.filter(is_staff=True)})
 

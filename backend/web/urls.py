@@ -8,4 +8,5 @@ urlpatterns = [
     path('staff-users', views.staff_users, name='staff-users'),
     path('file-entries', views.file_entries, name='file-entries'),
     path('payments', views.payments, name='payments'),
+    path('verify-otp', views.verify_otp, name='verify-otp'),
 ]
