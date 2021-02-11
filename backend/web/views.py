@@ -25,7 +25,7 @@ def customers(request):
     qs = models.Customer.objects.all()
     f = filters.CustomerFilter(request.GET, queryset=qs)
 
-    paginator = Paginator(qs, PAGE_SIZE)
+    paginator = Paginator(f.qs, PAGE_SIZE)
     page = request.GET.get('page', 1)
     try:
         customers = paginator.page(page)
