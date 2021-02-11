@@ -30,7 +30,7 @@ def send_message(message, receiver, channel='SMS', sms_shortcode='843', email_sr
         body = request_body(channelId=channel, customerId=receiver, message=message, externalTransactionId=0, additionalParameters=params)
         client.service.SendNotification(RequestHeader=hdr, RequestBody=body)
     except Exception as ex:
-        print('Error sending message!')
+        print('Error sending message!', ex)
 
 
 if __name__ == "__main__":
