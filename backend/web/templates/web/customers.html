@@ -49,7 +49,7 @@
             <td>{{ customer.request }}</td>
             <td>
                 {% if customer.request == 'Initiated' %}
-                <form method="POST" action="{% url 'customers'%}">
+                <form method="PUT" action="{% url 'customers'%}">
                     {% csrf_token %}
                     <input type="hidden" name="id" value="{{ customer.id }}" />
                     <button type="submit" name="action" value="Approved" class="btn btn-sm btn-success">Approve</button>
