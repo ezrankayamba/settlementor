@@ -105,7 +105,8 @@ def notified_customer_update(sender, instance, created, **kwargs):
                 logger.debug(f'Data: {data}')
 
                 headers = {'Content-Type': 'application/json'}
-                requests.post(url, data=json.dumps(data), headers=headers)
+                res = requests.post(url, data=json.dumps(data), headers=headers)
+                logger.info(f'Response: {res.text}')
         except Exception as ex:
             logger.error(f'Error: {ex}')
     t = threading.Thread(target=run)
