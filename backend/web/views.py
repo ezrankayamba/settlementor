@@ -18,7 +18,7 @@ def customers(request):
     if request.method == 'POST':
         resp = action_pending(request)
         print(resp)
-        return redirect('customers', {})
+        return redirect('customers')
     f = filters.CustomerFilter(request.GET, queryset=models.Customer.objects.all())
     return render(request, 'web/customers.html', {'customers': f})
 
