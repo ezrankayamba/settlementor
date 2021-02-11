@@ -20,7 +20,7 @@ MAX_THREADS = 10
 
 
 def sanitize_id(c_id):
-    id_str = str(id)
+    id_str = str(c_id)
     new_id = id_str.split('_')[0]
     return new_id
 
