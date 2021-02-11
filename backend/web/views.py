@@ -15,11 +15,11 @@ logger = logging.getLogger(__name__)
 @login_required
 def customers(request):
     resp = None
-    if request.method == 'PUT':
+    if request.method == 'POST':
         resp = action_pending(request)
         print(resp)
         return redirect('customers', {})
-    f = filters.CustomerFilter(request.POST, queryset=models.Customer.objects.all())
+    f = filters.CustomerFilter(request.GET, queryset=models.Customer.objects.all())
     return render(request, 'web/customers.html', {'customers': f})
 
 
