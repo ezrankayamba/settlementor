@@ -73,7 +73,7 @@ def action_pending(request):
                 new_status = 'Active'
             else:
                 new_status = 'Removed'
-                cust.owner_id = f'{cust.id}_{cust.owner_id}'
+                cust.owner_id = f'{cust.owner_id}_{cust.id}'
             cust.request = 'Rejected'
             cust.account_number_req = None
             cust.bank_id_req = None

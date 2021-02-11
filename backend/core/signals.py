@@ -19,6 +19,12 @@ logger = logging.getLogger(__name__)
 MAX_THREADS = 10
 
 
+def sanitize_id(c_id):
+    id_str = str(id)
+    new_id = id_str.split('_')[0]
+    return new_id
+
+
 @receiver(post_save, sender=User)
 def create_consumer(sender, instance, created, **kwargs):
     logger.debug(f'User created/updated: {instance}')
@@ -75,13 +81,13 @@ def notified_customer_update(sender, instance, created, **kwargs):
             if instance.request == 'Initiated':
                 logger.debug(f'Initiated: {instance}')
                 try:
-                    msg = f'Customer Whitelist Approval:\nRequested action: {instance.command}\nDetails: {instance}. \n\nIf you approve, forward and instruct command center with a ticket.\n\nRegards,\nSettlementor'
+                    msg = f'Customer Whitelist Approval:\nRequested action: {instance.command}\nOwner Name: {instance}. \n\nRegards,\nSettlementor'
                     send_message(message=msg, receiver='255713123066')
                 except Exception as ex:
                     logger.error(f'Error sending SMS: {ex}')
 
                 try:
-                    msg = f'<h3>Customer Whitelist Approval</h3><label>Requested action:</label> {instance.command}<br/><label>Details:</label> {instance}.<br/><br/>If you approve, forward and instruct command center with a ticket.<br/><br/>Regards,<br/>Settlementor'
+                    msg = f'<h3>Customer Whitelist Approval</h3><label>Requested action:</label> {instance.command}<br/><label>Owner Name:</label> {instance}.<br/><br/>Regards,<br/>Settlementor'
                     send_message(message=msg, receiver='godfred.nkayamba@tigo.co.tz', channel='Email', email_sub='WL Approval')
                 except Exception as ex:
                     logger.error(f'Error sending mail: {ex}')
@@ -89,7 +95,7 @@ def notified_customer_update(sender, instance, created, **kwargs):
             else:
                 logger.debug(f'Approval: {instance}')
                 data = {
-                    "companyID": instance.owner_id,
+                    "companyID": sanitize_id(instance.owner_id),
                     "approval": instance.request,
                     "command": instance.command,
                     "timestamp": datetime.now().isoformat(timespec='minutes')
