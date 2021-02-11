@@ -39,9 +39,11 @@ def staff_users(request):
     return render(request, 'web/staff-users.html', {'users': User.objects.filter(is_staff=True)})
 
 
+@login_required
 def action_pending(request):
     data = request.POST
     logger.debug("WhiteListApprovalView: %s", data)
+    print(data)
     consumer = request.user.consumer
 
     try:
