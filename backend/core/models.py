@@ -30,6 +30,9 @@ class Customer(models.Model):
         # return f'{self.owner_id} - {self.owner_name}|{self.bank_id}/{self.account_number}|{self.status}'
         return self.owner_name
 
+    class Meta:
+        ordering = ['-recorded_at']
+
 
 class FileEntry(models.Model):
     file_name_in = models.CharField(max_length=20, unique=True)

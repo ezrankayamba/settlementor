@@ -5,11 +5,14 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 import logging
 from django.db import IntegrityError
 from . import filters
 
 logger = logging.getLogger(__name__)
+
+PAGE_SIZE = 10
 
 
 @login_required
@@ -19,8 +22,21 @@ def customers(request):
         resp = action_pending(request)
         print(resp)
         return redirect('customers')
-    f = filters.CustomerFilter(request.GET, queryset=models.Customer.objects.all())
-    return render(request, 'web/customers.html', {'customers': f})
+    qs = models.Customer.objects.all()
+    f = filters.CustomerFilter(request.GET, queryset=qs)
+
+    paginator = Paginator(qs, PAGE_SIZE)
+    page = request.GET.get('page', 1)
+    try:
+        customers = paginator.page(page)
+    except PageNotAnInteger:
+        page = 1
+        customers = paginator.page(page)
+    except EmptyPage:
+        page = paginator.num_pages
+        customers = paginator.page(page)
+    ctx = {'page_obj': paginator.page(page), 'filter': f, 'customers': customers, }
+    return render(request, 'web/customers.html', ctx)
 
 
 @login_required
