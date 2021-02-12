@@ -21,7 +21,7 @@ class LDAPBackend(BaseBackend):
                                 info = response[0]['raw_attributes']
                                 # fullname = info['cn'][0].decode('utf-8')
                                 # title = info['title'][0].decode('utf-8')
-                                phone = info['telephoneNumber'][0].decode('utf-8')
+                                phone = info['telephoneNumber'][0].decode('utf-8')[1:]
                                 fname = info['givenName'][0].decode('utf-8')
                                 lname = info['sn'][0].decode('utf-8')
                                 mail = info['mail'][0].decode('utf-8')
