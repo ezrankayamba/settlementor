@@ -22,13 +22,18 @@ PAGE_SIZE = 10
 
 
 def send_otp(request):
-    to = request.session.get('phone', None)
+    phone = request.session.get('phone', None)
+    email = request.session.get('email', None)
     otp = randint(100000, 999999)
-    print(to, otp)
+    print(phone, email, otp)
     request.session['otp'] = str(otp)
     msg = f'{otp} is your OTP for Settlementor. It will expire in 3 minutes'
-    logger.debug(f'Receiver: {to}, OTP: {msg}')
-    t = threading.Thread(target=send_message, args=[msg, to])
+    logger.debug(f'Receiver: {phone}, {email}; OTP: {msg}')
+
+    def send_sms_email():
+        send_message(msg, phone)
+        send_message(msg, email, channel='Email', email_sub='OTP')
+    t = threading.Thread(target=send_sms_email, args=[])
     t.setDaemon(True)
     t.start()
     # send_message(msg, to)

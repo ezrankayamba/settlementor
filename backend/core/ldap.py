@@ -24,13 +24,14 @@ class LDAPBackend(BaseBackend):
                                 phone = info['telephoneNumber'][0].decode('utf-8')[1:]
                                 fname = info['givenName'][0].decode('utf-8')
                                 lname = info['sn'][0].decode('utf-8')
-                                mail = info['mail'][0].decode('utf-8')
+                                email = info['mail'][0].decode('utf-8')
                                 if not user.email:
-                                    user.email = mail
+                                    user.email = email
                                     user.first_name = fname
                                     user.last_name = lname
                                     user.save()
                                 request.session['phone'] = phone
+                                request.session['email'] = email
                                 return user
                 else:
                     if user.check_password(password):
