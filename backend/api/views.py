@@ -19,6 +19,7 @@ class WhitelistView(APIView):
         owner_id = data['companyID']
         consumer = request.user.consumer
         command = data['command']
+
         params = {
             'owner_id': data['companyID'],
             'owner_name': data['companyName'],
@@ -30,16 +31,24 @@ class WhitelistView(APIView):
 
         try:
             if command == 'ADD':
+                for key in params:
+                    if not params[key]:
+                        raise Exception('Invalid or empty data')
                 params['request'] = 'Initiated'
                 models.Customer.objects.create(**params)
             elif command == 'UPDATE':
                 cust = models.Customer.objects.filter(owner_id=owner_id, consumer=consumer, status='Active').first()
                 if cust:
-                    cust.account_number_req = data['bankAccountNumber']
-                    cust.bank_id_req = data['bankId']
-                    cust.command = command
-                    cust.request = 'Initiated'
-                    cust.save()
+                    acc_num = data['bankAccountNumber']
+                    bank_id = data['bankId']
+                    if acc_num and bank_id:
+                        cust.account_number_req = acc_num
+                        cust.bank_id_req = bank_id
+                        cust.command = command
+                        cust.request = 'Initiated'
+                        cust.save()
+                    else:
+                        raise Exception('Invalid or empty data')
                 else:
                     raise Exception('Customer not found')
             elif command == 'REMOVE':
