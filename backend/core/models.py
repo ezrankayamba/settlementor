@@ -7,14 +7,20 @@ class Consumer(models.Model):
     status = models.CharField(default='Active', max_length=10)
     tp_username = models.CharField(max_length=20, null=True)
     phone = models.CharField(max_length=20, null=True)
+    recorded_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f'{self.user.username}({self.status})'
+
+    class Meta:
+        ordering = ['-recorded_at']
 
 
 class Customer(models.Model):
     owner_id = models.CharField(unique=True, max_length=20)
     recorded_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     owner_name = models.CharField(max_length=100)
     bank_id = models.CharField(max_length=10)
     bank_id_req = models.CharField(max_length=10, null=True)
@@ -45,9 +51,12 @@ class FileEntry(models.Model):
     consumer = models.ForeignKey(Consumer, on_delete=models.PROTECT)
     entry_type = models.CharField(max_length=20, default='PAYMENT_FILE')
     signature = models.CharField(max_length=1000, null=True)
+    recorded_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name_plural = 'File entries'
+        ordering = ['-recorded_at']
 
 
 class Payment(models.Model):
@@ -61,6 +70,9 @@ class Payment(models.Model):
     status = models.CharField(max_length=20, default='Pending')
     result_code = models.CharField(max_length=20, null=True)
     trans_id = models.CharField(max_length=50, null=True)
+    recorded_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         unique_together = ['reference_number', 'consumer']
+        ordering = ['-recorded_at']
