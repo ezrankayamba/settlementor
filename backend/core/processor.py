@@ -32,6 +32,8 @@ class Processor(threading.Thread):
             with open(path) as csv_file:
                 verified = sf.verify(path, self.file_entry.signature)
                 logger.debug(f'Verified:  {verified}')
+                df1 = pd.read_csv(path)
+                logger.debug(df1.head(2))
                 if verified:
                     logger.debug('Successfully verified the signature. Continue with payment')
                     reader = csv.DictReader(csv_file)
@@ -65,21 +67,39 @@ class Processor(threading.Thread):
 
                     payments = models.Payment.objects.filter(file_entry=self.file_entry)
                     df2 = pd.DataFrame.from_records(payments.values_list('reference_number',  'status', 'result_code', 'trans_id'), columns=['reference_number',  'status', 'result_code', 'trans_id'])
+
                     df2.rename(columns={'reference_number': 'ReferenceNumber', 'status': 'Status', 'result_code': 'ResultCode', 'trans_id': 'TransID'}, inplace=True)
                     logger.debug(df2.head(2))
-                    df1 = pd.read_csv(f'{cfg.sftp_local_path()}/{self.file_entry.file_name_in}')
-                    logger.debug(df1.head(2))
+                    # df1 = pd.read_csv(f'{cfg.sftp_local_path()}/{self.file_entry.file_name_in}')
+                    # logger.debug(df1.head(2))
                     df = pd.merge(df1, df2[["ReferenceNumber", "Status", "ResultCode", "TransID"]], on='ReferenceNumber', how='left')
-                    file_name = f'Payment_Result_File_{self.file_entry.file_reference_id}.csv'
-                    local_path = cfg.sftp_local_path()
-                    res_file = f'{local_path}/{file_name}'
-                    df.to_csv(res_file, index=False)
-
-                    file_entry = self.file_entry
-                    file_entry.status = 'Processed'
-                    file_entry.file_name_out = file_name
-                    file_entry.save()
+                    # file_name = f'Payment_Result_File_{self.file_entry.file_reference_id}.csv'
+                    # local_path = cfg.sftp_local_path()
+                    # res_file = f'{local_path}/{file_name}'
+                    # df.to_csv(res_file, index=False)
+                    # file_entry = self.file_entry
+                    # file_entry.status = 'Processed'
+                    # file_entry.file_name_out = file_name
+                    # file_entry.save()
+                    df['Remarks'] = 'Processed'
                 else:
                     logger.debug(f'Signature is not valid: {self.file_entry.file_name_in}')
+                    df1['ReferenceNumber'] = None
+                    df1['Status'] = 'Fail'
+                    df1['ResultCode'] = -99
+                    df1['TransID'] = None
+                    df1['Remarks'] = 'Invalid signature'
+                    df = df1
+
+                file_name = f'Payment_Result_File_{self.file_entry.file_reference_id}.csv'
+                local_path = cfg.sftp_local_path()
+                res_file = f'{local_path}/{file_name}'
+                df.to_csv(res_file, index=False)
+
+                file_entry = self.file_entry
+                file_entry.status = 'Processed'
+                file_entry.file_name_out = file_name
+                file_entry.save()
+
         except Exception as ex:
             logger.error(f"Error processing: {ex}")

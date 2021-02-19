@@ -62,11 +62,12 @@ def notified_file_entry(sender, instance, created, **kwargs):
                     "countOfRecordsPaid": count,
                     "fileSignature": sig
                 }
+                logger.debug(data)
                 res = requests.post(cfg.result_file_url(), json=data, headers=headers)
                 if res.ok:
-                    logger.info('Success result callback: %s', res.text)
+                    logger.info('Callback result: %s', res.text)
                 else:
-                    logger.error('Fail result callback: %s', res.text)
+                    logger.error('Fail callback result: %s', res.text)
             except Exception as ex:
                 logger.error("Error processing Result file sending: %s", ex)
         t = threading.Thread(target=run)

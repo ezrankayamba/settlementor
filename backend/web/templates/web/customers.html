@@ -18,6 +18,7 @@
             <!-- <th scope="col">#</th> -->
             <th scope="col">Owner ID</th>
             <th scope="col">Owner Name</th>
+            <th scope="col">Recorded At</th>
             <th scope="col">Bank ID</th>
             <th scope="col">Account Number</th>
             <th scope="col">Status</th>
@@ -32,6 +33,7 @@
             <!-- <th scope="row">{{ customer.id }}</th> -->
             <th scope="row">{{ customer.owner_id }}</th>
             <td>{{ customer.owner_name }}</td>
+            <td>{{ customer.recorded_at|date:"SHORT_DATETIME_FORMAT" }}</td>
             <td>
                 {{ customer.bank_id }}
                 {% if customer.bank_id_req %}

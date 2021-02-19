@@ -141,3 +141,5 @@ pki
 
 settings.ini
 credentials.json
+files/
+out/
