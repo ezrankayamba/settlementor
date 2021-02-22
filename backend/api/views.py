@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from core import models, tta
 import logging
 from django.db import IntegrityError
+from core import tta
 
 logger = logging.getLogger(__name__)
 
@@ -97,6 +98,14 @@ class PaymentFileSharedView(APIView):
         try:
             f_ref_id = data['fileReferenceId']
             f_name = data['fileName']
+            total_amount = data['totalAmount']
+            status, bal_or_msg = tta.check_balance()
+            logger.debug(f'{status} - {bal_or_msg}')
+            if status != 0:
+                raise Exception(f"Not able to fetch balance of the collection account: {status}")
+            if total_amount > bal_or_msg:
+                raise Exception(f'Balance not enough: {bal_or_msg}/{total_amount}')
+
             params = {
                 'file_name_in': f_name,
                 'timestamp': data['timestamp'],

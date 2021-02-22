@@ -33,6 +33,6 @@ def convert(file, num):
 
 
 if __name__ == '__main__':
-    file = r'files/BF_gnkayamba1613732111808.xls'
-    num = 2
+    file = r'files/Lipia_mafuta_TXNs.xls'
+    num = 4
     convert(file, num)
