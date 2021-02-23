@@ -69,7 +69,7 @@ def verify_otp(request):
 @otp_required
 def customers(request):
     resp = None
-    if request.method == 'PATCH':
+    if request.POST.get('form', '') == 'approval':
         resp = action_pending(request)
         print(resp)
         return redirect('customers')

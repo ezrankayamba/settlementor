@@ -6,6 +6,7 @@
 <div class="filter-container">
     <h4>Petrol Station Owners</h4>
     <form method="POST">
+        <input type="hidden" name="form" value="filter" />
         {% csrf_token %}
         {{ filter.form.as_p }}
         <input type="submit" class="btn btn-primary btn-sm" />
@@ -53,6 +54,7 @@
             <td nowrap>
                 {% if customer.request == 'Initiated' %}
                 <form method="POST" action="{% url 'customers'%}">
+                    <input type="hidden" name="form" value="approval" />
                     {% csrf_token %}
                     <input type="hidden" name="id" value="{{ customer.id }}" />
                     <button type="submit" name="action" value="Approved" class="btn btn-sm btn-success">Approve</button>
@@ -68,6 +70,7 @@
 </table>
 <div class="pagination">
     <form method="POST">
+        <input type="hidden" name="form" value="pagination" />
         <div class="hide">
             {% csrf_token %}
             {{ filter.form.as_p }}
