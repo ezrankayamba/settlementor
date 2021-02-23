@@ -33,7 +33,8 @@
             <!-- <th scope="row">{{ customer.id }}</th> -->
             <th scope="row">{{ customer.owner_id }}</th>
             <td>{{ customer.owner_name }}</td>
-            <td>{{ customer.recorded_at|date:"SHORT_DATETIME_FORMAT" }}</td>
+            <td nowrap>{{ customer.recorded_at|date:"SHORT_DATE_FORMAT" }} {{ customer.recorded_at|time:"H:i" }}
+            </td>
             <td>
                 {{ customer.bank_id }}
                 {% if customer.bank_id_req %}
@@ -49,7 +50,7 @@
             <td>{{ customer.status }}</td>
             <td>{{ customer.command }}</td>
             <td>{{ customer.request }}</td>
-            <td>
+            <td nowrap>
                 {% if customer.request == 'Initiated' %}
                 <form method="POST" action="{% url 'customers'%}">
                     {% csrf_token %}

@@ -17,6 +17,7 @@
         <tr>
             <!-- <th scope="col">#</th> -->
             <th scope="col">Reference No</th>
+            <th>Trans At</th>
             <th scope="col">Customer</th>
             <th scope="col">Bank</th>
             <th scope="col">Account No</th>
@@ -30,6 +31,7 @@
         {% for entry in payments.qs %}
         <tr>
             <th scope="row">{{ entry.reference_number }}</th>
+            <td nowrap>{{ entry.recorded_at|date:"SHORT_DATE_FORMAT" }} {{ entry.recorded_at|time:"H:i" }}
             <td>{{ entry.customer.owner_name }}</td>
             <td>{{ entry.bank_id }}</td>
             <td>{{ entry.account_number }}</td>

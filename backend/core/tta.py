@@ -26,7 +26,7 @@ def pay_settlement(ref_number,   bank_account,  amount, bank_id='CRDB',  termina
             </Function>
         </TCSRequest>
     '''
-    logger.debug(req_xml)
+    # logger.debug(req_xml)
     headers = {
         'Content-Type': 'text/xml'
     }
@@ -63,7 +63,7 @@ def check_balance(terminal_type='API'):
             </Function>
         </TCSRequest>
     '''
-    logger.debug(req_xml)
+    # logger.debug(req_xml)
     headers = {
         'Content-Type': 'text/xml'
     }
