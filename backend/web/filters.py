@@ -14,6 +14,7 @@ STATUS_CHOICES = [
 TRANS_STATUS_CHOICES = [
     ('', '--------'),
     ('Success', 'Success'),
+    ('Submitted', 'Submitted'),
     ('Fail', 'Fail'),
     ('Pending', 'Pending'),
 ]
