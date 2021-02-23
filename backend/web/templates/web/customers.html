@@ -5,7 +5,7 @@
 {% block content %}
 <div class="filter-container">
     <h4>Petrol Station Owners</h4>
-    <form method="GET">
+    <form method="POST">
         {% csrf_token %}
         {{ filter.form.as_p }}
         <input type="submit" class="btn btn-primary btn-sm" />
@@ -67,20 +67,30 @@
     </tbody>
 </table>
 <div class="pagination">
-    <ul class="list-group list-group-horizontal">
-        {% if page_obj.has_previous %}
-        <li class="list-group-item"><a href="?page=1">&laquo; First</a></li>
-        <li class="list-group-item"><a href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
-        {% endif %}
+    <form method="POST">
+        <div class="hide">
+            {% csrf_token %}
+            {{ filter.form.as_p }}
+        </div>
+        <ul class="list-group list-group-horizontal">
+            {% if page_obj.has_previous %}
+            <li class="list-group-item"><button class="p-1" name="page" value="1">&laquo; First</button></li>
+            <li class="list-group-item"><button class="p-1" name="page"
+                    value="{{ page_obj.previous_page_number }}">Previous</button></li>
+            {% endif %}
 
-        <li class="current list-group-item">
-            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-        </li>
+            <li class="current list-group-item p-1">
+                Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+            </li>
 
-        {% if page_obj.has_next %}
-        <li class="list-group-item"><a href="?page={{ page_obj.next_page_number }}">Next</a></li>
-        <li class="list-group-item"><a href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a></li>
-        {% endif %}
-    </ul>
+            {% if page_obj.has_next %}
+            <li class="list-group-item"><button class="p-1" name="page"
+                    value="{{ page_obj.next_page_number }}">Next</button></li>
+            <li class="list-group-item"><button class="p-1" name="page" value="{{ page_obj.paginator.num_pages }}">Last
+                    &raquo;</button>
+            </li>
+            {% endif %}
+        </ul>
+    </form>
 </div>
 {% endblock %}

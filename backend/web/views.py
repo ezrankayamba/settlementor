@@ -69,15 +69,15 @@ def verify_otp(request):
 @otp_required
 def customers(request):
     resp = None
-    if request.method == 'POST':
+    if request.method == 'PATCH':
         resp = action_pending(request)
         print(resp)
         return redirect('customers')
     qs = models.Customer.objects.all()
-    f = filters.CustomerFilter(request.GET, queryset=qs)
+    f = filters.CustomerFilter(request.POST, queryset=qs)
 
     paginator = Paginator(f.qs, PAGE_SIZE)
-    page = request.GET.get('page', 1)
+    page = request.POST.get('page', 1)
     try:
         customers = paginator.page(page)
     except PageNotAnInteger:

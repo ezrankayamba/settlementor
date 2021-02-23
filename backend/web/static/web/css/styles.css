@@ -71,8 +71,17 @@
 }
 
 .pagination ul.list-group li {
-    padding: .2em .4em;
+    padding: 0
 }
-.pagination ul.list-group li a{
-    text-decoration: none;
+.pagination ul.list-group li button{
+    border: none;
+    /* background: none; */
+    outline: none;
+    padding: 0 1em;
+    /* border-radius: .2em; */
+}
+
+
+.hide{
+    display: none;
 }
