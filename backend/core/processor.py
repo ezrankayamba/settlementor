@@ -38,7 +38,10 @@ class Processor(threading.Thread):
                     logger.debug('Successfully verified the signature. Continue with payment')
                     reader = csv.DictReader(csv_file)
                     headers = reader.fieldnames
-                    if(all(x in test_list for x in sub_list)):
+                    logger.debug(headers)
+                    required_cols = ['CompanyID', 'Amount', 'ReferenceNumber']
+                    logger.debug(required_cols)
+                    if set(required_cols).issubset(set(headers)):
                         for row in reader:
                             try:
                                 company_id, amount, ref_number = row['CompanyID'], row['Amount'], row['ReferenceNumber']
