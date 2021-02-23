@@ -37,40 +37,51 @@ class Processor(threading.Thread):
                 if verified:
                     logger.debug('Successfully verified the signature. Continue with payment')
                     reader = csv.DictReader(csv_file)
-                    for row in reader:
-                        try:
-                            company_id, amount, ref_number = row['CompanyID'], row['Amount'], row['ReferenceNumber']
-                            logger.debug(f'{company_id}, {amount}, {ref_number}')
-                            cust = models.Customer.objects.filter(owner_id=company_id, status='Active').first()
-                            if cust:
-                                models.Payment.objects.create(file_entry=self.file_entry, customer=cust, reference_number=ref_number,
-                                                              bank_id=cust.bank_id, account_number=cust.account_number, consumer=consumer, amount=amount)
-                            else:
-                                logger.error(f'Not found: {company_id}')
-                        except Exception as ex:
-                            logger.error(f'Error recording payment: {ex}')
+                    headers = reader.fieldnames
+                    if(all(x in test_list for x in sub_list)):
+                        for row in reader:
+                            try:
+                                company_id, amount, ref_number = row['CompanyID'], row['Amount'], row['ReferenceNumber']
+                                logger.debug(f'{company_id}, {amount}, {ref_number}')
+                                cust = models.Customer.objects.filter(owner_id=company_id, status='Active').first()
+                                if cust:
+                                    models.Payment.objects.create(file_entry=self.file_entry, customer=cust, reference_number=ref_number,
+                                                                  bank_id=cust.bank_id, account_number=cust.account_number, consumer=consumer, amount=amount)
+                                else:
+                                    logger.error(f'Not found: {company_id}')
+                            except Exception as ex:
+                                logger.error(f'Error recording payment: {ex}')
 
-                    total = 0
-                    count = 0
-                    for payment in models.Payment.objects.filter(consumer=consumer, status='Pending'):
-                        try:
-                            tta_res, trans_id = tta.pay_settlement(ref_number=payment.reference_number, bank_account=payment.account_number,  amount=amount, bank_id=payment.bank_id)
-                            payment.status = 'Success' if tta_res == 0 else 'Submitted' if tta_res == 99999 else 'Fail'
-                            payment.result_code = tta_res
-                            payment.trans_id = trans_id
-                            payment.save()
-                            if payment.status == 'Success':
-                                total += payment.amount
-                                count += 1
-                        except Exception as ex:
-                            logger.error(f"Error doing payment for {payment.ref_number}")
+                        total = 0
+                        count = 0
+                        for payment in models.Payment.objects.filter(consumer=consumer, status='Pending'):
+                            try:
+                                tta_res, trans_id = tta.pay_settlement(ref_number=payment.reference_number, bank_account=payment.account_number,  amount=amount, bank_id=payment.bank_id)
+                                payment.status = 'Success' if tta_res == 0 else 'Submitted' if tta_res == 99999 else 'Fail'
+                                payment.result_code = tta_res
+                                payment.trans_id = trans_id
+                                payment.save()
+                                if payment.status == 'Success':
+                                    total += payment.amount
+                                    count += 1
+                            except Exception as ex:
+                                logger.error(f"Error doing payment for {payment.ref_number}")
 
-                    payments = models.Payment.objects.filter(file_entry=self.file_entry)
-                    df2 = pd.DataFrame.from_records(payments.values_list('reference_number',  'status', 'result_code', 'trans_id'), columns=['reference_number',  'status', 'result_code', 'trans_id'])
-                    df2.rename(columns={'reference_number': 'ReferenceNumber', 'status': 'Status', 'result_code': 'ResultCode', 'trans_id': 'TransID'}, inplace=True)
-                    logger.debug(df2.head(2))
-                    df = pd.merge(df1, df2[["ReferenceNumber", "Status", "ResultCode", "TransID"]], on='ReferenceNumber', how='left')
-                    df['Remarks'] = 'Processed'
+                        payments = models.Payment.objects.filter(file_entry=self.file_entry)
+                        df2 = pd.DataFrame.from_records(payments.values_list('reference_number',  'status', 'result_code', 'trans_id'),
+                                                        columns=['reference_number',  'status', 'result_code', 'trans_id'])
+                        df2.rename(columns={'reference_number': 'ReferenceNumber', 'status': 'Status', 'result_code': 'ResultCode', 'trans_id': 'TransID'}, inplace=True)
+                        logger.debug(df2.head(2))
+                        df = pd.merge(df1, df2[["ReferenceNumber", "Status", "ResultCode", "TransID"]], on='ReferenceNumber', how='left')
+                        df['Remarks'] = 'Processed'
+                    else:
+                        logger.debug(f'File format is not valid: {self.file_entry.file_name_in}')
+                        df1['ReferenceNumber'] = None
+                        df1['Status'] = 'Fail'
+                        df1['ResultCode'] = -99
+                        df1['TransID'] = None
+                        df1['Remarks'] = 'Invalid file format'
+                        df = df1
                 else:
                     logger.debug(f'Signature is not valid: {self.file_entry.file_name_in}')
                     df1['ReferenceNumber'] = None

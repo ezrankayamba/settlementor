@@ -73,6 +73,11 @@ LOGOUT_REDIRECT_URL = '/'  # new
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
+# Session - 3 minutes without activity, logout!
+SESSION_EXPIRE_SECONDS = 180
+SESSION_EXPIRE_AFTER_LAST_ACTIVITY = True
+SESSION_EXPIRE_AFTER_LAST_ACTIVITY_GRACE_PERIOD = 30
+
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
@@ -160,7 +165,7 @@ LOGGING = {
     },
     'loggers': {
         'root': {
-            'level': 'WARNING',
+            'level': 'DEBUG',
             'handlers': ['console'],
         },
         'core': {
@@ -169,7 +174,12 @@ LOGGING = {
             'propagate': False,
         },
         'api': {
-            'level': 'WARNING',
+            'level': 'DEBUG',
+            'handlers': ['console', 'file'],
+            'propagate': False,
+        },
+        'web': {
+            'level': 'DEBUG',
             'handlers': ['console', 'file'],
             'propagate': False,
         },
