@@ -8,6 +8,8 @@ from django.db import IntegrityError
 from core import tta
 from core import sftp_connect as sftp
 from config import config as cfg
+from core import secure_files as sf
+from core import secure_store as ss
 
 logger = logging.getLogger(__name__)
 
@@ -109,6 +111,22 @@ class PaymentFileSharedView(APIView):
                 raise Exception(f'Balance not enough: {bal_or_msg}/{total_amount}')
             if not sftp.download(cfg.sftp_tapsoa_path(), f_name):
                 raise Exception('File does not exist')
+            path = f'files/{f_name}'
+            sig = data['fileSignature']
+            with open(path) as csv_file:
+                verified = sf.verify(path, sig)
+                logger.debug(f'Verified:  {verified}')
+                if not verified:
+                    raise Exception('Signature not valid!')
+                logger.debug('Successfully verified the signature. Continue with payment')
+                reader = csv.DictReader(csv_file)
+                headers = reader.fieldnames
+                logger.debug(headers)
+                required_cols = ['CompanyID', 'Amount', 'ReferenceNumber']
+                logger.debug(required_cols)
+                if not set(required_cols).issubset(set(headers)):
+                    raise Exception('Invalid file format')
+
             params = {
                 'file_name_in': f_name,
                 'timestamp': data['timestamp'],
@@ -116,8 +134,9 @@ class PaymentFileSharedView(APIView):
                 'total_amount': data['totalAmount'],
                 'count_of_records': data['countOfRecords'],
                 'consumer': consumer,
-                'signature': data['fileSignature'],
+                'signature': sig,
             }
+            logger.debug(params)
             models.FileEntry.objects.create(**params)
         except Exception as ex:
             logger.error(ex)
@@ -126,16 +145,19 @@ class PaymentFileSharedView(APIView):
             if 'unique constraint' in str(ex):
                 err_code = 907
                 err_msg = 'Duplicate entry detected, check your inputs and resubmit!'
-            return Response({
+            res = {
                 'result': err_code,
                 'message': err_msg,
-            })
-
-        return Response({
+            }
+            logger.debug(res)
+            return Response(res)
+        {
             'result': 200,
             'message': f'Successfully executed the payment file notification',
             'fileReferenceId': f_ref_id
-        })
+        }
+        logger.debug(res)
+        return Response(res)
 
 
 class WhiteListApprovalView(APIView):
@@ -184,12 +206,15 @@ class WhiteListApprovalView(APIView):
             if 'unique constraint' in str(ex):
                 err_code = 907
                 err_msg = 'Duplicate entry detected, check your inputs and resubmit!'
-            return Response({
+            res = {
                 'result': err_code,
                 'message': err_msg,
-            })
-
-        return Response({
+            }
+            logger.debug(res)
+            return Response(res)
+        res = {
             'result': 200,
             'message': f'Successfully executed the approval update'
-        })
+        }
+        logger.debug(res)
+        return Response(res)
