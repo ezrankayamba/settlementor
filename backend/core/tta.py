@@ -69,6 +69,7 @@ def check_balance(terminal_type='API'):
     }
     try:
         res = requests.post(cfg.bal_url(), req_xml, headers=headers)
+        logger.debug(res.text)
         if res.ok:
             res_xml = res.text
             res = xml.parse(res_xml)['TCSReply']

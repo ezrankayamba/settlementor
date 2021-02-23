@@ -6,6 +6,8 @@ from core import models, tta
 import logging
 from django.db import IntegrityError
 from core import tta
+from core import sftp_connect as sftp
+from config import config as cfg
 
 logger = logging.getLogger(__name__)
 
@@ -103,9 +105,10 @@ class PaymentFileSharedView(APIView):
             logger.debug(f'{status} - {bal_or_msg}')
             if status != 0:
                 raise Exception(f"Not able to fetch balance of the collection account: {status}")
-            if total_amount > bal_or_msg:
+            if total_amount > float(bal_or_msg):
                 raise Exception(f'Balance not enough: {bal_or_msg}/{total_amount}')
-
+            if not sftp.download(cfg.sftp_tapsoa_path(), f_name):
+                raise Exception('File does not exist')
             params = {
                 'file_name_in': f_name,
                 'timestamp': data['timestamp'],
