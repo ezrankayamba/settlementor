@@ -69,11 +69,15 @@
 .container.main{
     padding-top: .5em;
 }
-
-.pagination ul.list-group li {
+.pagination-wrap form {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.pagination-wrap ul.list-group li {
     padding: 0
 }
-.pagination ul.list-group li button{
+.pagination-wrap ul.list-group li button{
     border: none;
     /* background: none; */
     outline: none;
@@ -84,4 +88,7 @@
 
 .hide{
     display: none;
+}
+.page-size{
+
 }

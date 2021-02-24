@@ -19,6 +19,7 @@ import threading
 logger = logging.getLogger(__name__)
 
 PAGE_SIZE = 10
+PAGE_SIZE_LIST = [4, 10, 20, 50, 100, 200, 1000]
 
 
 def send_otp(request):
@@ -65,43 +66,52 @@ def verify_otp(request):
     return render(request, 'registration/verify-otp.html', ctx)
 
 
+def get_ctx(request, f):
+    page_size = int(request.POST.get('page_size', PAGE_SIZE))
+    paginator = Paginator(f.qs, page_size)
+    page = request.POST.get('page', 1)
+    try:
+        result = paginator.page(page)
+    except PageNotAnInteger:
+        page = 1
+        result = paginator.page(page)
+    except EmptyPage:
+        page = paginator.num_pages
+        result = paginator.page(page)
+
+    page_s = list(map(lambda x: {'page': x, 'selected': x == page_size}, PAGE_SIZE_LIST))
+    ctx = {'page_obj': paginator.page(page), 'filter': f, 'result': result, 'page_s': page_s}
+    return ctx
+
+
 @login_required
 @otp_required
 def customers(request):
     resp = None
     if request.POST.get('form', '') == 'approval':
         resp = action_pending(request)
-        print(resp)
         return redirect('customers')
     qs = models.Customer.objects.all()
     f = filters.CustomerFilter(request.POST, queryset=qs)
-
-    paginator = Paginator(f.qs, PAGE_SIZE)
-    page = request.POST.get('page', 1)
-    try:
-        customers = paginator.page(page)
-    except PageNotAnInteger:
-        page = 1
-        customers = paginator.page(page)
-    except EmptyPage:
-        page = paginator.num_pages
-        customers = paginator.page(page)
-    ctx = {'page_obj': paginator.page(page), 'filter': f, 'customers': customers, }
+    ctx = get_ctx(request, f)
     return render(request, 'web/customers.html', ctx)
 
 
 @login_required
 @otp_required
 def payments(request):
-    f = filters.PaymentFilter(request.POST, queryset=models.Payment.objects.all())
-    return render(request, 'web/payments.html', {'payments': f})
+    qs = models.Payment.objects.all()
+    f = filters.PaymentFilter(request.POST, queryset=qs)
+    ctx = get_ctx(request, f)
+    return render(request, 'web/payments.html', ctx)
 
 
 @login_required
 @otp_required
 def file_entries(request):
     f = filters.FileEntryFilter(request.POST, queryset=models.FileEntry.objects.all())
-    return render(request, 'web/file-entries.html', {'file_entries': f})
+    ctx = get_ctx(request, f)
+    return render(request, 'web/file-entries.html', ctx)
 
 
 @login_required

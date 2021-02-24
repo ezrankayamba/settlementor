@@ -19,6 +19,12 @@ TRANS_STATUS_CHOICES = [
     ('Pending', 'Pending'),
 ]
 
+FILEENTRY_STATUS_CHOICES = [
+    ('', '--------'),
+    ('Processed', 'Processed'),
+    ('Pending', 'Pending'),
+]
+
 BANK_CHOICES = [
     ('', '--------'),
     ('CRDB', 'CRDB'),
@@ -64,7 +70,7 @@ class FileEntryFilter(django_filters.FilterSet):
         widget=forms.Select(choices=ENTRY_TYPE_CHOICES),
     )
     status = django_filters.CharFilter(
-        widget=forms.Select(choices=TRANS_STATUS_CHOICES),
+        widget=forms.Select(choices=FILEENTRY_STATUS_CHOICES),
     )
 
     class Meta:

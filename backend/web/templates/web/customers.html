@@ -16,7 +16,6 @@
 <table class="table table-sm table-bordered">
     <thead class="table-light">
         <tr>
-            <!-- <th scope="col">#</th> -->
             <th scope="col">Owner ID</th>
             <th scope="col">Owner Name</th>
             <th scope="col">Recorded At</th>
@@ -29,9 +28,8 @@
         </tr>
     </thead>
     <tbody>
-        {% for customer in customers %}
-        <tr>
-            <!-- <th scope="row">{{ customer.id }}</th> -->
+        {% for customer in result %}
+        <tr class="small">
             <th scope="row">{{ customer.owner_id }}</th>
             <td>{{ customer.owner_name }}</td>
             <td nowrap>{{ customer.recorded_at|date:"SHORT_DATE_FORMAT" }} {{ customer.recorded_at|time:"H:i" }}
@@ -68,8 +66,8 @@
         {% endfor %}
     </tbody>
 </table>
-<div class="pagination">
-    <form method="POST">
+<div class="pagination-wrap">
+    <form method="POST" id="paginationForm">
         <input type="hidden" name="form" value="pagination" />
         <div class="hide">
             {% csrf_token %}
@@ -94,6 +92,24 @@
             </li>
             {% endif %}
         </ul>
+        <div class="page-size">
+            <label for="pageSize">Records per page: </label>
+            {{page_size}}
+            <select name="page_size" id="pageSize" onchange="autoSubmit(event)">
+                {% for s in page_s %}
+                <option value="{{ s.page }}" {% if s.selected %} selected="selected" {% endif %}>{{ s.page }}</option>
+                {% endfor %}
+            </select>
+        </div>
     </form>
 </div>
+<script>
+    function autoSubmit(e) {
+        let el = e.target
+        let form = el.closest('form')
+        if (form) {
+            form.submit()
+        }
+    }
+</script>
 {% endblock %}

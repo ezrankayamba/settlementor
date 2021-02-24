@@ -7,7 +7,7 @@
     <h4>Payments</h4>
     <form method="POST">
         {% csrf_token %}
-        {{ payments.form.as_p }}
+        {{ filter.form.as_p }}
         <input type="submit" class="btn btn-primary btn-sm" />
     </form>
 </div>
@@ -28,8 +28,8 @@
         </tr>
     </thead>
     <tbody>
-        {% for entry in payments.qs %}
-        <tr>
+        {% for entry in result %}
+        <tr class="small">
             <th scope="row">{{ entry.reference_number }}</th>
             <td nowrap>{{ entry.recorded_at|date:"SHORT_DATE_FORMAT" }} {{ entry.recorded_at|time:"H:i" }}
             <td>{{ entry.customer.owner_name }}</td>
@@ -43,4 +43,49 @@
         {% endfor %}
     </tbody>
 </table>
+<div class="pagination-wrap">
+    <form method="POST" id="paginationForm">
+        <input type="hidden" name="form" value="pagination" />
+        <div class="hide">
+            {% csrf_token %}
+            {{ filter.form.as_p }}
+        </div>
+        <ul class="list-group list-group-horizontal">
+            {% if page_obj.has_previous %}
+            <li class="list-group-item"><button class="p-1" name="page" value="1">&laquo; First</button></li>
+            <li class="list-group-item"><button class="p-1" name="page"
+                    value="{{ page_obj.previous_page_number }}">Previous</button></li>
+            {% endif %}
+
+            <li class="current list-group-item p-1">
+                Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+            </li>
+
+            {% if page_obj.has_next %}
+            <li class="list-group-item"><button class="p-1" name="page"
+                    value="{{ page_obj.next_page_number }}">Next</button></li>
+            <li class="list-group-item"><button class="p-1" name="page" value="{{ page_obj.paginator.num_pages }}">Last
+                    &raquo;</button>
+            </li>
+            {% endif %}
+        </ul>
+        <div class="page-size">
+            <label for="pageSize">Records per page: </label>
+            <select name="page_size" id="pageSize" onchange="autoSubmit(event)">
+                {% for s in page_s %}
+                <option value="{{ s.page }}" {% if s.selected %} selected="selected" {% endif %}>{{ s.page }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </form>
+</div>
+<script>
+    function autoSubmit(e) {
+        let el = e.target
+        let form = el.closest('form')
+        if (form) {
+            form.submit()
+        }
+    }
+</script>
 {% endblock %}
