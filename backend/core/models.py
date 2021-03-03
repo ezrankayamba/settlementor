@@ -45,7 +45,7 @@ class FileEntry(models.Model):
     file_name_out = models.CharField(max_length=20, unique=True, null=True)
     timestamp = models.CharField(max_length=40)
     file_reference_id = models.CharField(max_length=20, unique=True)
-    total_amount = models.DecimalField(decimal_places=2, max_digits=40)
+    total_amount = models.DecimalField(decimal_places=2, max_digits=38)
     count_of_records = models.IntegerField()
     status = models.CharField(max_length=20, default='Pending')
     consumer = models.ForeignKey(Consumer, on_delete=models.PROTECT)
