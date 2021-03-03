@@ -143,3 +143,4 @@ settings.ini
 credentials.json
 files/
 out/
+local_settings.py

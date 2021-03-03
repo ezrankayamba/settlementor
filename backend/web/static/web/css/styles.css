@@ -92,3 +92,24 @@
 .page-size{
 
 }
+
+
+.action-controls {
+    position: relative;
+}
+
+.modal-attached {
+    position: absolute;
+    padding: .4em;
+    right: 0;
+    background: #fdfdfd;
+    border: 1px solid #ccc;
+    -webkit-box-shadow: 2px 2px 1px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 2px 2px 1px 0px rgba(0,0,0,0.75);
+    box-shadow: 2px 2px 1px 0px rgba(0,0,0,0.75);
+    display: none;
+    top: 2.4em;
+}
+.modal-attached.open{
+    display: block;
+}

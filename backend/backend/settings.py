@@ -1,3 +1,4 @@
+from .local_settings import *
 import os
 from pathlib import Path
 
@@ -36,6 +37,8 @@ INSTALLED_APPS = [
     'core.apps.CoreConfig',
     'api',
     'web',
+    'ussd',
+    'sadaka',
     'config',
 ]
 
@@ -82,12 +85,8 @@ SESSION_EXPIRE_AFTER_LAST_ACTIVITY_GRACE_PERIOD = 30
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+
+DATABASES = db_settings()
 
 
 # Password validation
@@ -159,7 +158,10 @@ LOGGING = {
             'formatter': 'console',
         },
         'file': {
-            'class': 'logging.FileHandler',
+            # 'class': 'logging.FileHandler',
+            'class': 'logging.handlers.RotatingFileHandler',
+            # 'maxBytes': 1024*1024*10,  # 10MB
+            'maxBytes': 1024*1,  # 1KB
             'formatter': 'console',
             'filename': 'logs/settlementor.log',
         },
@@ -184,6 +186,11 @@ LOGGING = {
             'handlers': ['console', 'file'],
             'propagate': False,
         },
+        'sadaka': {
+            'level': 'DEBUG',
+            'handlers': ['console', 'file'],
+            'propagate': False,
+        },
     },
 }
 
@@ -196,3 +203,6 @@ def token_exp():
 OAUTH2_PROVIDER = {
     'ACCESS_TOKEN_EXPIRE_SECONDS': token_exp()
 }
+
+if DEBUG and os.environ.get('RUN_MAIN', None) != 'true':
+    LOGGING = {}

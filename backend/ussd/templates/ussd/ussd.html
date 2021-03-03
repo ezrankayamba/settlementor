@@ -1,0 +1,213 @@
+{% extends "web/base.html" %}
+
+{% block title %}USSD{% endblock %}
+
+{% load static %}
+{% block content %}
+
+<!-- item template -->
+<script type="text/x-template" id="item-template">
+    <li>
+      <div
+        :class="{bold: isFolder}"
+        @click="toggle"
+        @dblclick="makeFolder">
+        { item.name }
+        <span v-if="isFolder">[{ isOpen ? '-' : '+' }]</span>
+      </div>
+      <ul v-show="isOpen" v-if="isFolder">
+        <tree-item
+          class="item"
+          v-for="(child, index) in item.options"
+          :key="index"
+          :item="child"
+          @make-folder="$emit('make-folder', $event)"
+          @add-item="$emit('add-item', $event)"
+        ></tree-item>
+        <li class="add" @click="$emit('add-item', item)">+</li>
+      </ul>
+    </li>
+  </script>
+
+<div class="top-bar">
+    <h4>Ussd Menu Management</h4>
+</div>
+<div class="ussd-tree">
+    <!-- <ul id="app">
+        <tree-item
+            class="item"
+            :item="treeData"
+            @make-folder="makeFolder"
+            @add-item="addItem"
+        ></tree-item>
+    </ul> -->
+
+    <div id="app" class="mt-2">
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="language-controls">
+          <label for="SW" class="p-2 bg-light"><input type="radio" checked value="SW" name="lang" id="SW"/> Swahili</label>
+          <label for="EN" class="p-2 bg-light"><input type="radio" value="EN" name="lang" id="EN"/> English</label>
+        </div>
+        <div class="action-controls">
+          <button class="btn btn-primary btn-sm " v-on:click="toggleAddFormOpen()">
+            <span v-if="!isAddFormOpen">Add Menu</span>
+            <span v-if="isAddFormOpen">Close</span>
+          </button>
+          <form @submit="addFormSubmit" method="POST" action="/ussd/menus/" class="modal-attached" v-bind:class="{ open: isAddFormOpen }">
+            {% csrf_token %}
+            <label for="menu_type" class="mb-2">
+              Menu Type
+              <input type="text" name="menu_type" id="menu_type"/>
+            </label>
+            <label for="label_en" class="mb-2">
+              English Label
+              <input type="text" name="label_en" id="label_en"/>
+            </label>
+            <label for="label_sw" class="mb-2">
+              Swahili Label
+              <input type="text" name="label_sw" id="label_sw"/>
+            </label>
+            <button type="submit" class="btn btn-sm btn-outline-primary">Create Menu</button>
+          </form>
+        </div>
+      </div>
+      
+      <table class="table table-sm table-bordered mt-2">
+        <thead class="table-light">
+          <tr>
+            <th>#</th><th>Type</th><th>English</th><th>Swahili</th><th>Parent</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="menu in menus">
+            <td>Here</td><td>Here</td><td>Here</td><td>Here</td><td>Here</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+</div>
+
+<script>
+    var menuTree={
+        name: 'SADAKA',
+            options: [
+                {
+                    name: 'KKKT DMP - Mbezi beach',
+                    options:[
+                        {
+                            name:'Ahadi'
+                        },
+                        {
+                            name:'Zaka (Fungu la 10)'
+                        },
+                        {
+                            name:'Jengo'
+                        },
+                        {
+                            name:'Elimu'
+                        },
+                        {
+                            name:'Huduma'
+                        },
+                        {
+                            name:'Nyingine'
+                        }
+                    ]
+                },
+                {
+                    name: 'KKKT DMP - Mbezi beach',
+                    options:[
+                        {
+                            name:'Ahadi'
+                        },
+                        {
+                            name:'Zaka (Fungu la 10)'
+                        },
+                        {
+                            name:'Jengo'
+                        },
+                        {
+                            name:'Elimu'
+                        },
+                        {
+                            name:'Huduma'
+                        },
+                        {
+                            name:'Nyingine'
+                        }
+                    ]
+                }
+            ]
+    }
+    // define the tree-item component
+    Vue.component("tree-item", {
+        template: "#item-template",
+        delimiters: ['{', '}'],
+        props: {
+          item: Object
+        },
+        data: function() {
+          return {
+            isOpen: false,
+            isAddFormOpen: false
+          };
+        },
+        computed: {
+          isFolder: function() {
+            return this.item.options && this.item.options.length;
+          }
+        },
+        methods: {
+          toggle: function() {
+            if (this.isFolder) {
+              this.isOpen = !this.isOpen;
+            }
+          },
+          makeFolder: function() {
+            if (!this.isFolder) {
+              this.$emit("make-folder", this.item);
+              this.isOpen = true;
+            }
+          }
+        }
+      });
+    var url='http://localhost:8000/ussd/menus/'
+    var app = new Vue({
+        delimiters: ['{', '}'],
+        el: '#app',
+        data: {
+            message: 'Hello Vue!',
+            treeData: menuTree,
+            menus:null,
+            isAddFormOpen: false
+        },
+        methods: {
+          makeFolder: function(item) {
+            Vue.set(item, "options", []);
+            this.addItem(item);
+          },
+          addItem: function(item) {
+            item.options.push({
+              name: "new stuff"
+            });
+          },
+          toggleAddFormOpen: function(){
+            this.isAddFormOpen = !this.isAddFormOpen
+          },
+          addFormSubmit: function(e){
+            e.preventDefault()
+            this.isAddFormOpen=false
+            console.log(e)
+            alert(e)
+            fetch(url)
+          }
+        },
+        mounted () {
+          axios
+            .get(url)
+            .then(response => (this.menus = response))
+        }
+    })
+    console.log(app)
+</script>
+{% endblock %}

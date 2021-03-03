@@ -1,12 +1,16 @@
 import zeep
 from collections import OrderedDict
 from zeep.wsse.username import UsernameToken
+import logging
+
+logger = logging.getLogger(__name__)
 
 WSDL_URL = 'http://10.222.130.29:8002/osb/services/SendNotification_1_0?WSDL'
 
 
 def send_message(message, receiver, channel='SMS', sms_shortcode='843', email_src='Service.Tigopesa@tigo.co.tz', email_sub='Settlementor'):
-    print(receiver, ' : ', message)
+    for n in range(1000):
+        logger.debug(f'{receiver} : {message}')
     try:
         client = zeep.Client(wsdl=WSDL_URL, wsse=UsernameToken('test_mw_TigopesaSettlement', 'M@grVt1on123!'))
         country_type = client.get_type('ns1:CountryContentType')
@@ -30,7 +34,7 @@ def send_message(message, receiver, channel='SMS', sms_shortcode='843', email_sr
         body = request_body(channelId=channel, customerId=receiver, message=message, externalTransactionId=0, additionalParameters=params)
         client.service.SendNotification(RequestHeader=hdr, RequestBody=body)
     except Exception as ex:
-        print('Error sending message!', ex)
+        logger.debug(f'Error sending message! {ex}')
 
 
 if __name__ == "__main__":
