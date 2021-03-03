@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('file_name', models.CharField(max_length=20)),
-                ('timestamp', models.CharField(max_length=40)),
+                ('timestamp', models.CharField(max_length=38)),
                 ('file_reference_id', models.CharField(max_length=20)),
                 ('total_amount', models.DecimalField(decimal_places=2, max_digits=40)),
                 ('count_of_records', models.IntegerField()),
