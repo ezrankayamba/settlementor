@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 ('file_name', models.CharField(max_length=20, unique=True)),
                 ('timestamp', models.CharField(max_length=40)),
                 ('file_reference_id', models.CharField(max_length=20, unique=True)),
-                ('total_amount', models.DecimalField(decimal_places=2, max_digits=40)),
+                ('total_amount', models.DecimalField(decimal_places=2, max_digits=38)),
                 ('count_of_records', models.IntegerField()),
                 ('status', models.CharField(default='Pending', max_length=20)),
                 ('entry_type', models.CharField(default='PAYMENT_FILE', max_length=20)),
